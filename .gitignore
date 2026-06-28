@@ -36,6 +36,7 @@
 .Spotlight-V100
 .Trashes
 .vscode/
+.hsnips/
 .idea/
 *.swp
 *~
