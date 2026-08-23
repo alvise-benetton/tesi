@@ -1,51 +1,232 @@
-% book
-% Required fields: author or editor, title, publisher, year. 
-% Optional fields: volume or number, series, address, edition, month, note.
-@book{coulouris,
-  author = {Coulouris  G.  F.,  Dollimore J. e  Kindberg T},
-  title = {Distributed Systems: concepts and Design},
-  publisher = {Addison-Wesley},
-  year = {1994},
-  edition = "second edition"
+% ==============================================================================
+% BIBLIOGRAFIA TESI DI LAUREA - RAGGRUPPATA PER TEMA E TITOLO
+% ==============================================================================
 
+% ==============================================================================
+% 1. PREDICTIVE PROCESS MONITORING (PPM)
+% ==============================================================================
+
+@article{ppm-benchmark-teinemaa2019,
+  author  = {Teinemaa, Irene and Dumas, Marlon and La Rosa, Marcello and Maggi, Fabrizio Maria},
+  title   = {Outcome-Oriented Predictive Process Monitoring: Review and Benchmark},
+  journal = {ACM Transactions on Knowledge Discovery from Data (TKDD)},
+  volume  = {13},
+  number  = {2},
+  pages   = {17:1--17:57},
+  year    = {2019},
+  doi     = {10.1145/3301300}
 }
 
-% article
-% Required fields: author, title, journal, year. 
-% Optional fields: volume, number, pages, month, note.
-@article{donoho,
-  author = {Donoho D. L.},
-  title = {Compressed Sensing},
-  journal = {IEEE Trans. Inf. Theory},
-  volume = {52},
-  number = {4},
-  pages = {1289-1306},
-  year = {2006}
+@inproceedings{ppm-lstm-tax2017,
+  author    = {Tax, Niek and Verenich, Ilya and La Rosa, Marcello and Dumas, Marlon},
+  title     = {Predictive Business Process Monitoring with {LSTM} Neural Networks},
+  booktitle = {Advanced Information Systems Engineering - 29th International Conference (CAiSE)},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {10253},
+  pages     = {477--492},
+  publisher = {Springer},
+  year      = {2017},
+  doi       = {10.1007/978-3-319-59536-8_28}
 }
 
-% conference
-% same as inproceedings
-% Required fields: author, title, booktitle, year. 
-% Optional fields: editor, volume or number, series, pages, address, month, organization, publisher, note
-@conference{dalal,
-  author = {Dalal N., Triggs B.},
-  title = {Histograms of Oriented Gradients for Human Detection},
-  booktitle = {Computer Vision and Pattern Recognition (CVPR)},
-  address = {San Diego, USA},
-  year = {2005},
-  month = {20-26 June},
-  pages = {886-893}
+@article{ppm-deeplearning-evermann2017,
+  author  = {Evermann, Joerg and Rehse, Jana-Rebecca and Fettke, Peter},
+  title   = {Predicting Process Behaviour using Deep Learning},
+  journal = {Decision Support Systems},
+  volume  = {100},
+  pages   = {129--140},
+  year    = {2017},
+  doi     = {10.1016/j.dss.2017.04.003}
 }
 
-% website
-% as misc
-% Required fields: none. 
-% Optional fields: author, title, howpublished, month, year, note.
-@misc{ictbusiness,
-  title = {ICT business},
-  howpublished = {http://www.ictbusiness.it/},
-  note = {ultimo accesso 15/06/2015}
+@mastersthesis{ppm-human-centered-vian2024,
+  author = {Vian, Luca},
+  title  = {Applying Human-Centered Computing to Predictive Process Monitoring: A Preliminary Study},
+  school = {University of Trento},
+  year   = {2024}
 }
 
 
+% ==============================================================================
+% 2. EXPLAINABLE AI (XAI) & INTERPRETABILITÀ
+% ==============================================================================
 
+@inproceedings{xai-nirdizati-light-2024,
+  author    = {Buliga, Andrei and Graziosi, Riccardo and Di Francescomarino, Chiara and Ghidini, Chiara and Maggi, Fabrizio Maria and Rizzi, Williams and Ronzani, Massimiliano},
+  title     = {Nirdizati Light: A Modular Framework for Explainable Predictive Process Monitoring},
+  booktitle = {BPM 2024 Demos Track},
+  series    = {CEUR Workshop Proceedings},
+  volume    = {3758},
+  pages     = {paper-20},
+  year      = {2024},
+  url       = {https://ceur-ws.org/Vol-3758/paper-20.pdf}
+}
+
+@article{xai-ppm-usereval-rizzi2024,
+  author  = {Rizzi, Williams and Comuzzi, Marco and Di Francescomarino, Chiara and Ghidini, Chiara and Lee, Suhwan and Maggi, Fabrizio Maria and Nolte, Alexander},
+  title   = {Explainable predictive process monitoring: a user evaluation},
+  journal = {Process Science},
+  volume  = {1},
+  number  = {3},
+  year    = {2024},
+  doi     = {10.1007/s44311-024-00003-3}
+}
+
+@article{xai-ppm-review-mehdiyev2025,
+  author  = {Mehdiyev, Nijat and Majlatow, Maxim},
+  title   = {Interpretable and explainable machine learning methods for predictive process monitoring: a systematic literature review},
+  journal = {Artificial Intelligence Review},
+  volume  = {58},
+  year    = {2025},
+  doi     = {10.1007/s10462-025-11399-0}
+}
+
+@inproceedings{xai-pneumonia-caruana2015,
+  author    = {Caruana, Rich and Lou, Yin and Gehrke, Johannes and Koch, Paul and Sturm, Marc and Elhadad, No{\'e}mie},
+  title     = {Intelligible Models for {HealthCare}: Predicting Pneumonia Risk and Hospital 30-day Readmission},
+  booktitle = {Proceedings of the 21st ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD)},
+  pages     = {1721--1730},
+  year      = {2015},
+  doi       = {10.1145/2783258.2788613}
+}
+
+@inproceedings{xai-pairwise-lou2013,
+  author    = {Lou, Yin and Caruana, Rich and Gehrke, Johannes and Hooker, Giles},
+  title     = {Accurate Intelligible Models with Pairwise Interactions},
+  booktitle = {Proceedings of the 19th ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD)},
+  pages     = {623--631},
+  year      = {2013},
+  doi       = {10.1145/2487575.2487579}
+}
+
+@article{xai-interpretml-framework-2019,
+  author  = {Nori, Harsha and Jenkins, Samuel and Koch, Paul and Caruana, Rich},
+  title   = {{InterpretML}: A Unified Framework for Machine Learning Interpretability},
+  journal = {CoRR},
+  volume  = {abs/1909.09223},
+  year    = {2019},
+  url     = {https://arxiv.org/abs/1909.09223}
+}
+
+@misc{xai-interpretml-whitepaper-2020,
+  author = {Nori, Harsha and Jenkins, Samuel and Koch, Paul and Caruana, Rich},
+  title  = {{InterpretML}: A toolkit for understanding machine learning models},
+  year   = {2020},
+  note   = {Technical Whitepaper}
+}
+
+@misc{xai-ebm-reference-2020,
+  author       = {{InterpretML Core Team}},
+  title        = {Explainable Boosting Machine ({EBM}) Technical Reference},
+  howpublished = {\url{https://interpret.ml}},
+  year         = {2020}
+}
+
+
+% ==============================================================================
+% 3. PROCESS MINING & ANALISI DEL COMPORTAMENTO
+% ==============================================================================
+
+@book{pm-handbook-van-der-aalst2022,
+  editor    = {van der Aalst, Wil M. P. and Carmona, Josep},
+  title     = {Process Mining Handbook},
+  series    = {Lecture Notes in Business Information Processing},
+  volume    = {448},
+  publisher = {Springer},
+  year      = {2022},
+  doi       = {10.1007/978-3-031-08848-3}
+}
+
+@article{pm-user-behavior-rehse2024,
+  author  = {Rehse, Jana-Rebecca and Abb, Luka and Berg, Gregor and Bormann, Carsten and Kampik, Timotheus and Warmuth, Christian},
+  title   = {User Behavior Mining: A Research Agenda},
+  journal = {Business \& Information Systems Engineering},
+  volume  = {66},
+  number  = {2},
+  year    = {2024},
+  doi     = {10.1007/s12599-023-00848-1}
+}
+
+@inproceedings{pm-daily-routine-difederico2023,
+  author    = {Di Federico, Gemma and Fern{\'a}ndez-Llatas, Carlos and Ahmadi, Zahra and Shirali, Mohsen and Burattin, Andrea},
+  title     = {Identifying Variation in Personal Daily Routine Through Process Mining: A Case Study},
+  booktitle = {Process Mining Workshops - ICPM 2023 International Workshops},
+  series    = {Lecture Notes in Business Information Processing},
+  publisher = {Springer},
+  year      = {2023}
+}
+
+@article{pm-video-conformance-chen2023,
+  author  = {Chen, Si and Zou, Min and Cao, Ran and Zhao, Zhiyong and Zeng, Qing},
+  title   = {Video Process Mining and Model Matching for Intelligent Development: Conformance Checking},
+  journal = {Sensors},
+  volume  = {23},
+  number  = {8},
+  pages   = {3812},
+  year    = {2023},
+  doi     = {10.3390/s23083812}
+}
+
+@phdthesis{pm-human-behavior-difederico2023,
+  author = {Di Federico, Gemma},
+  title  = {A Process Mining Framework to Analyze Variability in Human Behavior},
+  school = {Technical University of Denmark (DTU)},
+  year   = {2023}
+}
+
+@misc{pm-multimodal-gavric2024,
+  author = {Gavric, Aleksandar},
+  title  = {Multimodal Process Mining},
+  school = {TU Wien},
+  year   = {2024}
+}
+
+
+% ==============================================================================
+% 4. MACHINE LEARNING & DEEP LEARNING (ALGORITMI E LIBRI)
+% ==============================================================================
+
+@inproceedings{ml-xgboost-chen2016,
+  author    = {Chen, Tianqi and Guestrin, Carlos},
+  title     = {{XGBoost}: A Scalable Tree Boosting System},
+  booktitle = {Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD)},
+  pages     = {785--794},
+  year      = {2016},
+  doi       = {10.1145/2939672.2939785}
+}
+
+@article{dl-lstm-hochreiter1997,
+  author  = {Hochreiter, Sepp and Schmidhuber, J{\"u}rgen},
+  title   = {Long Short-Term Memory},
+  journal = {Neural Computation},
+  volume  = {9},
+  number  = {8},
+  pages   = {1735--1780},
+  year    = {1997},
+  doi     = {10.1162/neco.1997.9.8.1735}
+}
+
+@book{ml-elements-statistical-learning-2009,
+  author    = {Hastie, Trevor and Tibshirani, Robert and Friedman, Jerome},
+  title     = {The Elements of Statistical Learning: Data Mining, Inference, and Prediction},
+  publisher = {Springer},
+  edition   = {2nd},
+  year      = {2009},
+  doi       = {10.1007/978-0-387-84858-7}
+}
+
+@book{ml-intro-statistical-learning-2023,
+  author    = {James, Gareth and Witten, Daniela and Hastie, Trevor and Tibshirani, Robert and Taylor, Jonathan},
+  title     = {An Introduction to Statistical Learning with Applications in Python},
+  publisher = {Springer},
+  year      = {2023},
+  doi       = {10.1007/978-3-031-38747-0}
+}
+
+@book{dl-deep-learning-book-2016,
+  author    = {Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron},
+  title     = {Deep Learning},
+  publisher = {MIT Press},
+  year      = {2016},
+  url       = {https://www.deeplearningbook.org/}
+}
