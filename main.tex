@@ -15,24 +15,9 @@
 
 % formato FRONTE RETRO
 \documentclass[a4paper,11pt,titlepage,twoside,openany]{book}
-\usepackage{graphicx}
-\usepackage{plain}
-\usepackage{setspace}
-\usepackage[paperheight=29.7cm,paperwidth=21cm,outer=1.5cm,inner=2.5cm,top=2cm,bottom=2cm]{geometry} % per definizione layout
-\usepackage{titlesec} % per formato custom dei titoli dei capitoli
-\usepackage[T1]{fontenc}
-\usepackage{newtxtext,newtxmath} % Font Times New Roman (come da linee guida, versione moderna)
 
-%%%%%%%%%%%%%%
-% supporto lettere accentate
-%
-%\usepackage[latin1]{inputenc} % per Windows;
-\usepackage[utf8x]{inputenc} % per Linux (richiede il pacchetto unicode);
-%\usepackage[applemac]{inputenc} % per Mac.
-
-\singlespacing
-
-\usepackage[italian]{babel}
+% Configurazioni di layout, pacchetti, font e comandi custom
+\input{config/settings}
 
 \begin{document}
 

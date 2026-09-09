@@ -1,0 +1,65 @@
+% ==============================================================================
+% CONFIGURAZIONI E PACCHETTI DELLA TESI
+% ==============================================================================
+
+% Layout e margini pagina
+\usepackage[paperheight=29.7cm,paperwidth=21cm,outer=1.5cm,inner=2.5cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{setspace}
+\singlespacing
+\setlength{\parindent}{0pt}
+
+% Titoli capitoli e formattazione
+\usepackage{titlesec}
+\usepackage{plain}
+\usepackage{graphicx}
+
+% Font e tipografia
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext,newtxmath} % Font Times New Roman (versione moderna per LaTeX)
+
+% Supporto lingua italiana e codifica
+\usepackage[utf8x]{inputenc}
+\usepackage[italian]{babel}
+
+% Colori e grafica TikZ
+\usepackage{xcolor}
+\usepackage{standalone}
+\usepackage{tikz}
+\usetikzlibrary{
+    shapes.geometric,
+    arrows.meta,
+    positioning,
+    fit,
+    backgrounds,
+    calc,
+    shadows.blur
+}
+
+% Palette multicolore convenzionale accademica (Standard Scientific / ColorBrewer)
+\definecolor{skblue_head}{RGB}{31, 119, 180}     % Blu classico (Dataset)
+\definecolor{skblue_bg}{RGB}{224, 238, 250}
+\definecolor{skblue_txt}{RGB}{12, 45, 82}
+
+\definecolor{skteal_head}{RGB}{23, 145, 155}     % Ottanio / Teal (Feature & Encoding)
+\definecolor{skteal_bg}{RGB}{220, 244, 246}
+\definecolor{skteal_txt}{RGB}{10, 52, 58}
+
+\definecolor{skgreen_head}{RGB}{44, 155, 45}     % Verde classico (Modelli & Addestramento)
+\definecolor{skgreen_bg}{RGB}{225, 245, 225}
+\definecolor{skgreen_txt}{RGB}{15, 58, 20}
+
+\definecolor{skorange_head}{RGB}{225, 110, 20}    % Arancione / Ambra (Valutazione)
+\definecolor{skorange_bg}{RGB}{254, 235, 220}
+\definecolor{skorange_txt}{RGB}{85, 35, 10}
+
+\definecolor{skpurple_head}{RGB}{135, 85, 175}   % Viola classico (Spiegabilità)
+\definecolor{skpurple_bg}{RGB}{242, 230, 248}
+\definecolor{skpurple_txt}{RGB}{50, 18, 70}
+
+% ==============================================================================
+% COMANDI PERSONALIZZATI (CUSTOM MACROS)
+% ==============================================================================
+
+% Inclusione figure TikZ standalone scalate
+% Sintassi: \inputtikz[larghezza (default \textwidth)]{file.tex}
+\newcommand{\inputtikz}[2][\textwidth]{\resizebox{#1}{!}{\input{#2}}}
