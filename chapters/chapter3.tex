@@ -3,21 +3,107 @@
 
 \section{Architettura generale}
 \label{sec:architecture}
+L'obiettivo metodologico dell'esperimento consiste nella progettazione e valutazione di un sistema applicato ad attività di assemblaggio manuale nell'ambito di Predictive Process Monitoring (PPM), implementato per predire in anticipo il successo o il fallimento del montaggio associando o meno ai tradizionali registri di processo i segnali posturali dell'operatore. Si configura quindi come un task di \textit{outcome-prediction} (classificazione binaria) seguito da un modulo di spiegabilità dei modelli utilizzati.
+\begin{figure}[htbp]
+    \centering
+    \inputtikz{images/source/pipeline_architecture.tex}
+    \caption{Architettura della pipeline sperimentale}
+    \label{fig:pipeline_architettura}
+\end{figure}
+
+Come illustrato nella Figura~\ref{fig:pipeline_architettura}, la pipeline si articola in 5 fasi principali:
+\begin{enumerate}
+    \item \textbf{Dataset}: caricamento dei log di assemblaggio ed estrazione delle feature nelle due configurazioni \texttt{no\_human} e \texttt{human}, con partizionamento in 10 fold per la Cross-Validation.
+    \item \textbf{Bucketing ed encoding}: suddivisione e codifica delle tracce secondo tre diverse strategie di bucketing, con rappresentazione tabulare (2D) per i modelli classici e tensoriale (3D) per la rete neurale ricorrente (LSTM).
+\item \textbf{Addestramento e ottimizzazione}: addestramento dei quattro classificatori (Decision Tree, Random Forest, XGBoost e LSTM) mediante Nested Cross-Validation e ottimizzazione bayesiana degli iperparametri (Hyperopt TPE) orientata alla massimizzazione del coefficiente MCC sul validation set.
+    \item \textbf{Valutazione}: calcolo delle metriche di classificazione aggregate sui test set di tutti i 10 fold di Cross-Validation e identificazione del fold con MCC mediano come istanza rappresentativa. 
+    \item \textbf{Spiegabilità}: attribuzione di feature importance tramite tecnica SHAP con confronto tra metodi di spiegabilità \textit{model-specific} (\texttt{TreeExplainer} per Decision Tree, Random Forest, XGBoost; \texttt{DeepExplainer} per LSTM) e agnostici (\texttt{KernelExplainer}).
+\end{enumerate}
 
 \section{Dataset}
 \label{sec:dataset}
+L'indagine sperimentale si innesta su una pipeline di preparazione dati precedentemente implementata, comprensiva delle fasi di \textit{event log extraction}, \textit{event log enrichment}, \textit{event log pre-processing} e \textit{prefix generation} (per maggiori dettagli si veda il lavoro svolto da Vian~\cite{ppm-human-centered-vian2024}).
 
-\section{Trace Encoding e Bucketing}
-\label{sec:trace_encoding_and_bucketing}
+Sono considerate due diverse configurazioni del dataset:
 
-\section{Modelli di predizione, training e validazione}
-\label{sec:pred_train_val}
+\paragraph{\texttt{no\_human} (baseline di processo).}
+Include i dati dell'event log tradizionale. Rappresenta la configurazione di riferimento standard nell'ambito del Process Mining.
 
-\section{Spiegabilità (XAI)}
-\label{sec:xai}
+\paragraph{\texttt{human} (configurazione arricchita).}
+Aggiunge alla baseline di processo dei segnali riferiti all'operatore umano. In particolare vengono calcolati i seguenti attributi:
+\begin{itemize}
+    \item \texttt{Action Execution Variants}: indica variazioni nell'esecuzione delle azioni di montaggio. È un attributo categorico definito in modo deterministico.
+    \item \texttt{Action Quality}: specifica azioni eseguite non correttamente. È un attributo categorico definito in modo deterministico.
+    \item \texttt{Focus of Attention}: indica se l'operatore è attento o meno al montaggio del pezzo. È un attributo binario, con valore \texttt{True} o \texttt{False}.
+    \item \texttt{Pose Ergonomic Score}: indica una valutazione ergonomica di specifiche parti del corpo attraverso punteggi sulla scala RULA (utilizzata per descrivere il rischio di disordini muscolo-scheletrici). Sono incluse le metriche per braccio (\textit{upper arm}), avambraccio (\textit{lower arm}), polso (\textit{wrist}) e collo (\textit{neck}).
+    \item \texttt{Movement Dynamics}: quantifica il livello di movimento dell'operatore. Comprende sia la media che la deviazione standard della posizione del tronco durante la stessa azione.
+\end{itemize}
+
+Le tracce reali del dataset sono già pre-suddivise secondo uno schema di Nested 10-Fold Cross-Validation, in cui ciascun fold ripartisce i dati in \textbf{Training} (\textasciitilde 70\% delle tracce, per l'addestramento dei modelli), \textbf{Validation} (\textasciitilde 20\%, per l'ottimizzazione degli iperparametri) e \textbf{Testing} (10\%, riservato al calcolo delle metriche di performance finali).
+
+\section{Bucketing ed encoding}
+\label{sec:bucketing_encoding}
+\subsection{Bucketing}
+\label{subsec:bucketing}
+L'obiettivo dell'indagine di \textit{outcome-prediction} è anticipare il risultato di una traccia di assemblaggio a partire dai prefissi incompleti, ottenuti riducendo l'intera esecuzione attraverso l'applicazione di differenti strategie di bucketing. Vian~\cite{ppm-human-centered-vian2024} indaga le seguenti tre strategie, riprodotte nella pipeline:
+\paragraph{\texttt{PREFIX\_LENGTH}.}
+Le tracce complete sono troncate a un numero fisso di eventi a partire dall'evento iniziale, con numero di eventi che varia da 5 a 25 con step unitari. Poiché tutti i prefissi dello stesso bucket hanno la stessa lunghezza, non vengono adottate strategie di padding.
+
+\paragraph{\texttt{COMPONENT}.}
+Le tracce sono troncate al completamento dell'assemblaggio di 1 dei 4 pannelli principali, risultando in 4 bucket di analisi. Per gestire diverse lunghezze nei prefissi dello stesso bucket viene adottata una strategia di NaN-padding.
+
+\paragraph{\texttt{COMPONENT\_TIME\_WARPED}.}
+Come \texttt{COMPONENT}, ma è adottata una strategia di padding basata su \textit{time-warping}. I prefissi sono espansi temporalmente (su azioni non atomiche) per adattarsi in termini di numero di eventi al più lungo prefisso osservato.
+
+\begin{figure}[htbp]
+    \centering
+    \input{images/source/encoding_strategies.tex}
+    \caption{Esempio di generazione dei prefissi utilizzando le tre strategie descritte sopra}
+    \label{fig:encoding_strategies}
+\end{figure}
+
+\subsection{Encoding}
+\label{subsec:encoding}
+Successivamente vengono adottate le adeguate strategie di \textit{encoding} per mappare i prefissi nei formati utilizzabili dai classificatori considerati. Diversamente da Vian~\cite{ppm-human-centered-vian2024} che utilizza esclusivamente Decision Tree, nella pipeline descritta i prefissi sono stati trasformati in
+\begin{enumerate*}[label=(\roman*)]
+    \item formato tabulare per Decision Tree, Random Forest e XGBoost
+    \item formato tensoriale per LSTM
+\end{enumerate*}.
+
+In entrambi i casi i dati si sviluppano considerando le seguenti 3 dimensioni:
+\begin{itemize}
+    \item $N$: numero di istanze analizzate appartenenti allo stesso bucket
+    \item $T$: numero di passi temporali considerati
+    \item $D$: cardinalità delle feature di base
+\end{itemize}
+
+
+\paragraph{Formato tabulare.}
+La rappresentazione tabulare di dimensione $(N \times (T \cdot D))$ viene impiegata per i modelli basati su alberi (Decision Tree, Random Forest e XGBoost). Come osservato da Vian, poiché i prefissi contengono attributi sia categorici che continui, va adottata una strategia ibrida: i dati continui vengono mantenuti nel loro valore originario, i dati categorici sono tradotti secondo una logica di \textit{one-hot encoding}. La dimensione temporale è rappresentata orizzontalmente su più attributi secondo la convenzione \texttt{<feature>\_<step t>}.
+\begin{figure}[htbp]
+    \centering
+    \input{images/source/tabular_format.tex}
+    \caption{Esempio di prefisso trasformato in formato tabulare}
+    \label{fig:tabular_format}
+\end{figure}
+
+\paragraph{Formato tensoriale.}
+Per l'architettura LSTM i prefissi trasformati in formato tabulare vengono mappati in tensori tridimensionali di forma $(N, T, D)$. La dinamica temporale del processo viene così preservata lungo la sequenza, consentendo alla rete ricorrente di elaborare gli eventi in ordine cronologico.
+\begin{figure}[htbp]
+    \centering
+    \input{images/source/tensor_format.tex}
+    \caption{Esempio di prefisso trasformato in formato tensoriale}
+    \label{fig:tensor_format}
+\end{figure}
+
+\section{Addestramento e ottimizzazione}
+\label{sec:addestramento_ottimizzazione}
+
+\section{Valutazione}
+\label{sec:valutazione}
+
+\section{Spiegabilità}
+\label{sec:spiegabilita}
 
 \section{Stack tecnologico}
 \label{sec:stack}
-
-\section{Metriche di valutazione}
-\label{sec:metrics-of-evaluation}
