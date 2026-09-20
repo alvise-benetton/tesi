@@ -2,16 +2,30 @@
 % CONFIGURAZIONI E PACCHETTI DELLA TESI
 % ==============================================================================
 
-% Layout e margini pagina
-\usepackage[paperheight=29.7cm,paperwidth=21cm,outer=1.5cm,inner=2.5cm,top=2cm,bottom=2cm]{geometry}
+% Layout e margini pagina (Linee Guida DISI UniTn)
+\usepackage[paperheight=29.7cm,paperwidth=21cm,top=2cm,bottom=2cm,outer=1.5cm,inner=2.5cm]{geometry}
 \usepackage{setspace}
 \singlespacing
 \setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt plus 1pt minus 1pt}
+\raggedbottom
 
-% Titoli capitoli e formattazione
+% Gestione elenchi (senza rientro a sinistra, allineati al margine del testo)
+\usepackage[inline]{enumitem}
+\setlist{leftmargin=*, topsep=4pt, itemsep=2pt, partopsep=0pt, parsep=0pt}
+
+% Titoli capitoli e sezioni in linea (stile tesi esempio)
 \usepackage{titlesec}
+\titleformat{\chapter}[hang]
+  {\normalfont\huge\bfseries}{\thechapter}{1em}{\huge}
+\titlespacing*{\chapter}{0pt}{15pt}{15pt}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
 \usepackage{plain}
 \usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{float}
 
 % Font e tipografia
 \usepackage[T1]{fontenc}
@@ -32,7 +46,8 @@
     fit,
     backgrounds,
     calc,
-    shadows.blur
+    shadows.blur,
+    decorations.pathreplacing
 }
 
 % Palette multicolore convenzionale accademica (Standard Scientific / ColorBrewer)
@@ -63,3 +78,16 @@
 % Inclusione figure TikZ standalone scalate
 % Sintassi: \inputtikz[larghezza (default \textwidth)]{file.tex}
 \newcommand{\inputtikz}[2][\textwidth]{\resizebox{#1}{!}{\input{#2}}}
+
+% ==============================================================================
+% COLLEGAMENTI IPERTESTUALI (HYPERREF)
+% ==============================================================================
+\usepackage[
+    hidelinks,                  % Rende i link cliccabili senza riquadri o colori invasivi
+    linktoc=all,                % Rende sia il testo che i numeri di pagina cliccabili nell'indice
+    unicode=true,               % Supporto caratteri unicode nei segnalibri PDF
+    pdfstartview={FitH},        % Adatta alla larghezza della pagina all'apertura
+    bookmarks=true,             % Abilita i segnalibri PDF
+    bookmarksnumbered=true      % Numera le sezioni nei segnalibri PDF
+]{hyperref}
+

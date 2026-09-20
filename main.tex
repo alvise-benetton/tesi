@@ -1,4 +1,4 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
 %
 % Template per Elaborato di Laurea
 % DISI - Dipartimento di Ingegneria e Scienza dell’Informazione
@@ -12,9 +12,8 @@
 % pdflatex nome_file.tex
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% formato FRONTE RETRO
-\documentclass[a4paper,11pt,titlepage,twoside,openany]{book}
+% formato FRONTE RETRO (A4, 11pt, openright per iniziare i capitoli a destra)
+\documentclass[a4paper,11pt,titlepage,twoside,openright]{book}
 
 % Configurazioni di layout, pacchetti, font e comandi custom
 \input{config/settings}
@@ -23,9 +22,18 @@
 
 % nessuna numerazione
 \pagenumbering{gobble}
+% --- FRONTMATTER ---
+\frontmatter
+\pagestyle{plain}
+
+% Frontespizio
 \input{frontmatter/titlepage}
+\cleardoublepage
 
 \clearpage
+% Sommario & Dichiarazione AI (su singola pagina)
+\input{frontmatter/abstract}
+\cleardoublepage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34,13 +42,21 @@
 %% Sezione Ringraziamenti opzionale
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Ringraziamenti (opzionale)
 \input{frontmatter/acknowledgements}
 \clearpage
 \pagestyle{plain} % nessuna intestazione e pie pagina con numero al centro
+\cleardoublepage
 
+% Indice generale
+\pagenumbering{Roman}
+\tableofcontents
+\cleardoublepage
 
 % inizio numerazione pagine in numeri arabi
+% --- MAINMATTER ---
 \mainmatter
+\pagenumbering{arabic}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -68,8 +84,8 @@
 \begingroup
 % nessuna interruzione di pagina tra capitoli
 % ridefinizione dei comandi di clear page
-\renewcommand{\cleardoublepage}{}
-\renewcommand{\clearpage}{}
+\renewcommand{\cleardoublepage}{\par}
+\renewcommand{\clearpage}{\par}
 % redefinizione del formato del titolo del capitolo
 % da formato
 %   Capitolo X
@@ -110,12 +126,14 @@
 %
 % \input oppure \include
 %
+% Capitoli
 \input{chapters/chapter1}
 \input{chapters/chapter2}
 \input{chapters/chapter3}
 \input{chapters/chapter4}
 \input{chapters/chapter5}
 
+\cleardoublepage
 
 \endgroup
 
@@ -123,6 +141,7 @@
 % bibliografia in formato bibtex
 %
 % aggiunta del capitolo nell'indice
+% --- BIBLIOGRAFIA ---
 \addcontentsline{toc}{chapter}{Bibliografia}
 % stile con ordinamento alfabetico in funzione degli autori
 \bibliographystyle{plain}
@@ -155,11 +174,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\cleardoublepage
 
 \titleformat{\chapter}
 {\normalfont\Huge\bfseries}{Allegato \thechapter}{1em}{}
 % sezione Allegati - opzionale
+% --- ALLEGATI (OPZIONALE) ---
 \appendix
+\titleformat{\chapter}[hang]
+  {\normalfont\huge\bfseries}{Allegato \thechapter}{1em}{\huge}
 \input{backmatter/appendix}
 
 \end{document}
