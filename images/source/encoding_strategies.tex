@@ -1,0 +1,229 @@
+%! TeX root = ../../main.tex
+\documentclass[tikz,border=8pt,11pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
+
+\begin{document}
+
+% ==============================================================================
+% DEFINIZIONE COLORI (PALETTE ACCADEMICA UNIFICATA)
+% ==============================================================================
+\definecolor{actA}{RGB}{252, 232, 131}          % A: Giallo caldo pastello
+\definecolor{actB}{RGB}{242, 168, 178}          % B: Rosa corallo tenue (Azione non-atomica)
+\definecolor{actC}{RGB}{188, 222, 178}          % C: Verde salvia
+\definecolor{actD}{RGB}{164, 198, 238}          % D: Azzurro polvere (Azione non-atomica)
+\definecolor{actNaN}{RGB}{235, 235, 235}        % NaN: Grigio neutro
+\definecolor{actEmpty}{RGB}{255, 255, 255}      % Slot vuoto
+
+\definecolor{hdr_bg}{RGB}{242, 245, 249}        % Sfondo intestazioni griglia
+\definecolor{hdr_txt}{RGB}{25, 35, 50}          % Testo intestazioni griglia
+
+\begin{tikzpicture}[
+    font=\footnotesize,
+    x=0.96cm,
+    y=0.52cm,
+    % Stile cella della griglia
+    cell/.style={
+        draw=black!80,
+        line width=0.55pt,
+        inner sep=0pt,
+        minimum width=0.96cm,
+        minimum height=0.52cm,
+        font=\footnotesize,
+        text=black,
+        align=center
+    },
+    % Intestazione riga sinistra
+    rowhdr/.style={
+        draw=black!80,
+        line width=0.55pt,
+        fill=hdr_bg,
+        inner sep=0pt,
+        minimum width=2.9cm,
+        minimum height=0.52cm,
+        font=\footnotesize\bfseries,
+        text=hdr_txt,
+        align=left
+    },
+    % Intestazione colonna numerica (1..10)
+    colhdr/.style={
+        draw=black!80,
+        line width=0.55pt,
+        fill=hdr_bg,
+        inner sep=0pt,
+        minimum width=0.96cm,
+        minimum height=0.52cm,
+        font=\footnotesize\bfseries,
+        text=hdr_txt,
+        align=center
+    },
+    % Titolo sopra ogni tabella
+    sectiontitle/.style={
+        font=\bfseries\footnotesize,
+        text=black,
+        anchor=south west,
+        align=left
+    }
+]
+
+    % Coordinata X per allineamento a sinistra (bordo sinistro di rowhdr a x = -3.45)
+    \def\leftX{-3.45}
+    % Coordinata Y per il distacco del titolo dalla tabella
+    \def\titleY{0.50}
+
+    % ==========================================================================
+    % 1. TRACCE COMPLETE DELL'EVENT LOG
+    % ==========================================================================
+    \node[sectiontitle] at (\leftX, \titleY) {Tracce complete dell'Event Log};
+
+    % Header colonne
+    \node[rowhdr] at (-2.0, 0) {\hspace{6pt}Numero evento};
+    \foreach \i in {1,...,10} {
+        \node[colhdr] at (\i - 1, 0) {\i};
+    }
+
+    % Trace 1
+    \node[rowhdr] at (-2.0, -1) {\hspace{6pt}Traccia 1};
+    \node[cell, fill=actA] at (0, -1) {A};
+    \node[cell, fill=actB] at (1, -1) {B};
+    \node[cell, fill=actA] at (2, -1) {A};
+    \node[cell, fill=actC] at (3, -1) {C};
+    \node[cell, fill=actD] at (4, -1) {D};
+    \node[cell, fill=actB] at (5, -1) {B};
+    \node[cell, fill=actA] at (6, -1) {A};
+    \node[cell, fill=actD] at (7, -1) {D};
+    \node[cell, fill=actEmpty] at (8, -1) {};
+    \node[cell, fill=actEmpty] at (9, -1) {};
+
+    % Trace 2
+    \node[rowhdr] at (-2.0, -2) {\hspace{6pt}Traccia 2};
+    \node[cell, fill=actA] at (0, -2) {A};
+    \node[cell, fill=actC] at (1, -2) {C};
+    \node[cell, fill=actA] at (2, -2) {A};
+    \node[cell, fill=actA] at (3, -2) {A};
+    \node[cell, fill=actB] at (4, -2) {B};
+    \node[cell, fill=actD] at (5, -2) {D};
+    \node[cell, fill=actD] at (6, -2) {D};
+    \node[cell, fill=actC] at (7, -2) {C};
+    \node[cell, fill=actA] at (8, -2) {A};
+    \node[cell, fill=actA] at (9, -2) {A};
+
+    % ==========================================================================
+    % 2. PREFIX_LENGTH, lunghezza = 5
+    % ==========================================================================
+    \begin{scope}[yshift=-2.85cm]
+        \node[sectiontitle] at (\leftX, \titleY) {\texttt{PREFIX\_LENGTH}, lunghezza $= 5$};
+
+        % Header colonne
+        \node[rowhdr] at (-2.0, 0) {\hspace{6pt}Numero evento};
+        \foreach \i in {1,...,10} {
+            \node[colhdr] at (\i - 1, 0) {\i};
+        }
+
+        % Prefix 1
+        \node[rowhdr] at (-2.0, -1) {\hspace{6pt}Prefisso 1};
+        \node[cell, fill=actA] at (0, -1) {A};
+        \node[cell, fill=actB] at (1, -1) {B};
+        \node[cell, fill=actA] at (2, -1) {A};
+        \node[cell, fill=actC] at (3, -1) {C};
+        \node[cell, fill=actD] at (4, -1) {D};
+        \foreach \i in {5,...,9} {
+            \node[cell, fill=actEmpty] at (\i, -1) {};
+        }
+
+        % Prefix 2
+        \node[rowhdr] at (-2.0, -2) {\hspace{6pt}Prefisso 2};
+        \node[cell, fill=actA] at (0, -2) {A};
+        \node[cell, fill=actC] at (1, -2) {C};
+        \node[cell, fill=actA] at (2, -2) {A};
+        \node[cell, fill=actA] at (3, -2) {A};
+        \node[cell, fill=actB] at (4, -2) {B};
+        \foreach \i in {5,...,9} {
+            \node[cell, fill=actEmpty] at (\i, -2) {};
+        }
+    \end{scope}
+
+    % ==========================================================================
+    % 3. COMPONENT, target = [A,B,C], componente = 2
+    % ==========================================================================
+    \begin{scope}[yshift=-5.70cm]
+        \node[sectiontitle] at (\leftX, \titleY) {\texttt{COMPONENT}, target $= [\text{A},\text{B},\text{C}]$, componente $= 2$};
+
+        % Header colonne
+        \node[rowhdr] at (-2.0, 0) {\hspace{6pt}Numero evento};
+        \foreach \i in {1,...,10} {
+            \node[colhdr] at (\i - 1, 0) {\i};
+        }
+
+        % Prefix 1
+        \node[rowhdr] at (-2.0, -1) {\hspace{6pt}Prefisso 1};
+        \node[cell, fill=actA] at (0, -1) {A};
+        \node[cell, fill=actB] at (1, -1) {B};
+        \node[cell, fill=actA] at (2, -1) {A};
+        \node[cell, fill=actC] at (3, -1) {C};
+        \node[cell, fill=actD] at (4, -1) {D};
+        \node[cell, fill=actB] at (5, -1) {B};
+        \node[cell, fill=actNaN] at (6, -1) {\footnotesize\textit{NaN}};
+        \node[cell, fill=actNaN] at (7, -1) {\footnotesize\textit{NaN}};
+        \node[cell, fill=actEmpty] at (8, -1) {};
+        \node[cell, fill=actEmpty] at (9, -1) {};
+
+        % Prefix 2
+        \node[rowhdr] at (-2.0, -2) {\hspace{6pt}Prefisso 2};
+        \node[cell, fill=actA] at (0, -2) {A};
+        \node[cell, fill=actC] at (1, -2) {C};
+        \node[cell, fill=actA] at (2, -2) {A};
+        \node[cell, fill=actA] at (3, -2) {A};
+        \node[cell, fill=actB] at (4, -2) {B};
+        \node[cell, fill=actD] at (5, -2) {D};
+        \node[cell, fill=actD] at (6, -2) {D};
+        \node[cell, fill=actC] at (7, -2) {C};
+        \node[cell, fill=actEmpty] at (8, -2) {};
+        \node[cell, fill=actEmpty] at (9, -2) {};
+    \end{scope}
+
+    % ==========================================================================
+    % 4. COMPONENT_TIME_WARPED
+    % ==========================================================================
+    \begin{scope}[yshift=-8.55cm]
+        \node[sectiontitle] at (\leftX, \titleY) {\texttt{COMPONENT\_TIME\_WARPED}, target $= [\text{A},\text{B},\text{C}]$, componente $= 2$, non-atomiche $= [\text{B},\text{D}]$};
+
+        % Header colonne
+        \node[rowhdr] at (-2.0, 0) {\hspace{6pt}Numero evento};
+        \foreach \i in {1,...,10} {
+            \node[colhdr] at (\i - 1, 0) {\i};
+        }
+
+        % Prefix 1 (D duplicato a pos 5 e 6, B duplicato a pos 7 e 8)
+        \node[rowhdr] at (-2.0, -1) {\hspace{6pt}Prefisso 1};
+        \node[cell, fill=actA] at (0, -1) {A};
+        \node[cell, fill=actB] at (1, -1) {B};
+        \node[cell, fill=actA] at (2, -1) {A};
+        \node[cell, fill=actC] at (3, -1) {C};
+        \node[cell, fill=actD] at (4, -1) {D};
+        \node[cell, fill=actD] at (5, -1) {D};
+        \node[cell, fill=actB] at (6, -1) {B};
+        \node[cell, fill=actB] at (7, -1) {B};
+        \node[cell, fill=actEmpty] at (8, -1) {};
+        \node[cell, fill=actEmpty] at (9, -1) {};
+
+        % Prefix 2
+        \node[rowhdr] at (-2.0, -2) {\hspace{6pt}Prefisso 2};
+        \node[cell, fill=actA] at (0, -2) {A};
+        \node[cell, fill=actC] at (1, -2) {C};
+        \node[cell, fill=actA] at (2, -2) {A};
+        \node[cell, fill=actA] at (3, -2) {A};
+        \node[cell, fill=actB] at (4, -2) {B};
+        \node[cell, fill=actD] at (5, -2) {D};
+        \node[cell, fill=actD] at (6, -2) {D};
+        \node[cell, fill=actC] at (7, -2) {C};
+        \node[cell, fill=actEmpty] at (8, -2) {};
+        \node[cell, fill=actEmpty] at (9, -2) {};
+    \end{scope}
+
+\end{tikzpicture}
+
+\end{document}

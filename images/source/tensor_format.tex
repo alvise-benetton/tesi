@@ -1,0 +1,162 @@
+%! TeX root = ../../main.tex
+\documentclass[tikz,border=10pt,11pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc, decorations.pathreplacing}
+
+\begin{document}
+
+% ==============================================================================
+% DEFINIZIONE COLORI (ARMONIZZATA CON TABULAR FORMAT ED ENCODING STRATEGIES)
+% ==============================================================================
+\definecolor{hdr_bg}{RGB}{242, 245, 249}
+\definecolor{hdr_txt}{RGB}{25, 35, 50}
+\definecolor{pad_bg}{RGB}{248, 249, 250}
+\definecolor{pad_txt}{RGB}{100, 100, 100}
+\definecolor{depth_line}{RGB}{140, 155, 175}
+
+\begin{tikzpicture}[
+    font=\footnotesize,
+    >=Stealth,
+    colhdr/.style={
+        draw=black!80,
+        line width=0.55pt,
+        fill=hdr_bg,
+        inner sep=0pt,
+        minimum height=0.58cm,
+        font=\footnotesize\bfseries,
+        text=hdr_txt,
+        align=center
+    },
+    cell/.style={
+        draw=black!80,
+        line width=0.55pt,
+        fill=white,
+        inner sep=0pt,
+        minimum height=0.58cm,
+        font=\footnotesize,
+        text=black,
+        align=center
+    },
+    padcell/.style={
+        draw=black!80,
+        line width=0.55pt,
+        fill=pad_bg,
+        inner sep=0pt,
+        minimum height=0.58cm,
+        font=\footnotesize\itshape,
+        text=pad_txt,
+        align=center
+    }
+]
+
+    % Dimensioni colonne e righe (uguali a tabular_format.tex)
+    \def\wStep{0.80cm}
+    \def\wAct{1.30cm}
+    \def\wRula{1.45cm}
+    \def\hRow{0.58cm}
+
+    % Dimensioni complessive tabella: W = 0.80 + 1.30 + 1.45 = 3.55cm
+    % Altezza complessiva: 4 * 0.58 = 2.32cm (da y = -1.16 a 1.16)
+    \def\W{3.55}
+    \def\Htop{1.16}
+    \def\Hbot{-1.16}
+
+    % Offset prospettico lungo asse N (profondita)
+    \def\dx{3.85}
+    \def\dy{1.15}
+
+    % ==========================================================================
+    % 1. LINEE TRATTEGGIATE PROSPETTICHE DI SFONDO
+    % ==========================================================================
+    % Vertice superiore sinistro
+    \draw[depth_line, dashed, line width=0.55pt] (0, \Htop) -- ++(\dx, \dy);
+    % Vertice inferiore sinistro
+    \draw[depth_line, dashed, line width=0.55pt] (0, \Hbot) -- ++(\dx, \dy);
+    % Vertice inferiore destro
+    \draw[depth_line, dashed, line width=0.55pt] (\W, \Hbot) -- ++(\dx, \dy);
+
+    % ==========================================================================
+    % 2. FETTA POSTERIORE: Cassetto 05 (completamente visibile)
+    % ==========================================================================
+    \begin{scope}[shift={(\dx, \dy)}]
+        % Titolo fetta posteriore
+        \node[font=\footnotesize\bfseries, text=hdr_txt, anchor=south west] 
+            at (0, \Htop + 0.10) {Cassetto 05};
+
+        % Intestazioni colonne
+        \node[colhdr, minimum width=\wStep] at (0.400, 0.87) {$t$};
+        \node[colhdr, minimum width=\wAct]  at (1.450, 0.87) {\textbf{act}};
+        \node[colhdr, minimum width=\wRula] at (2.825, 0.87) {\textbf{rula}};
+
+        % Riga 1: t=1
+        \node[colhdr, minimum width=\wStep] at (0.400, 0.29) {$1$};
+        \node[cell, minimum width=\wAct]    at (1.450, 0.29) {2};
+        \node[cell, minimum width=\wRula]   at (2.825, 0.29) {4.0};
+
+        % Riga 2: t=2
+        \node[colhdr, minimum width=\wStep] at (0.400, -0.29) {$2$};
+        \node[cell, minimum width=\wAct]    at (1.450, -0.29) {3};
+        \node[cell, minimum width=\wRula]   at (2.825, -0.29) {6.5};
+
+        % Riga 3: t=3 (padding)
+        \node[colhdr, minimum width=\wStep]  at (0.400, -0.87) {$3$};
+        \node[padcell, minimum width=\wAct]  at (1.450, -0.87) {0 \textit{(pad)}};
+        \node[padcell, minimum width=\wRula] at (2.825, -0.87) {0.0 \textit{(pad)}};
+    \end{scope}
+
+    % ==========================================================================
+    % 3. FETTA ANTERIORE: Cassetto 01
+    % ==========================================================================
+    \begin{scope}[shift={(0, 0)}]
+        % Titolo fetta anteriore con sfondo bianco per non farsi tagliare da linee
+        \node[font=\footnotesize\bfseries, text=hdr_txt, anchor=south west, fill=white, inner sep=2pt] 
+            at (0, \Htop + 0.10) {Cassetto 01};
+
+        % Intestazioni colonne
+        \node[colhdr, minimum width=\wStep] at (0.400, 0.87) {$t$};
+        \node[colhdr, minimum width=\wAct]  at (1.450, 0.87) {\textbf{act}};
+        \node[colhdr, minimum width=\wRula] at (2.825, 0.87) {\textbf{rula}};
+
+        % Riga 1: t=1
+        \node[colhdr, minimum width=\wStep] at (0.400, 0.29) {$1$};
+        \node[cell, minimum width=\wAct]    at (1.450, 0.29) {2};
+        \node[cell, minimum width=\wRula]   at (2.825, 0.29) {3.5};
+
+        % Riga 2: t=2
+        \node[colhdr, minimum width=\wStep] at (0.400, -0.29) {$2$};
+        \node[cell, minimum width=\wAct]    at (1.450, -0.29) {4};
+        \node[cell, minimum width=\wRula]   at (2.825, -0.29) {5.0};
+
+        % Riga 3: t=3
+        \node[colhdr, minimum width=\wStep] at (0.400, -0.87) {$3$};
+        \node[cell, minimum width=\wAct]    at (1.450, -0.87) {1};
+        \node[cell, minimum width=\wRula]   at (2.825, -0.87) {2.0};
+    \end{scope}
+
+    % ==========================================================================
+    % 4. ELEMENTI IN PRIMO PIANO: LINEA SUPERIORE DESTRA E GRAFFE DIMENSIONALI
+    % ==========================================================================
+    % Linea tratteggiata del vertice in alto a destra (in primo piano)
+    \draw[depth_line, dashed, line width=0.55pt] (\W, \Htop) -- ++(\dx, \dy);
+
+    % Dimensione T (Passi temporali - graffa con mirror a sinistra della fetta frontale)
+    \draw[black!85, line width=0.55pt, decorate, decoration={brace, mirror, amplitude=4pt}]
+        (-0.10, 0.58) -- (-0.10, \Hbot)
+        node[midway, left=5pt, font=\small] {$T$};
+
+    % Dimensione D (Feature - graffa sotto la fetta frontale, su act e rula)
+    \draw[black!85, line width=0.55pt, decorate, decoration={brace, mirror, amplitude=4pt}]
+        (0.80, \Hbot - 0.12) -- (\W, \Hbot - 0.12)
+        node[midway, below=5pt, font=\small] {$D$};
+
+    % Dimensione N (Graffa sotto la linea che collega i vertici in basso a destra)
+    \draw[black!85, line width=0.55pt, decorate, decoration={brace, mirror, amplitude=4pt, raise=4pt}]
+        (\W, \Hbot) -- ++(\dx, \dy)
+        node[midway, below right=6pt, font=\small] {$N$};
+
+\end{tikzpicture}
+
+\end{document}

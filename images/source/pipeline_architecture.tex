@@ -1,0 +1,190 @@
+%! TeX root = ../../main.tex
+\documentclass[tikz,border=20pt,11pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc}
+
+\begin{document}
+
+\begin{tikzpicture}[
+    font=\normalsize,
+    >=Stealth,
+    % Stile card / blocco Sankey con testo NERO
+    sankeycard/.style={
+        fill=#1,
+        text=black,
+        minimum height=0.76cm,
+        inner xsep=8pt,
+        inner ysep=4pt,
+        align=center
+    },
+    % Header superiore a tutta larghezza di fase
+    headbanner/.style 2 args={
+        fill=#1,
+        text=white,
+        font=\bfseries\normalsize,
+        minimum width=#2,
+        minimum height=0.70cm,
+        inner xsep=0pt,
+        inner ysep=0pt,
+        align=center
+    }
+]
+
+    % ==========================================================================
+    % MACRO PER NASTRI SANKEY AD ALTEZZA COMPLETA CON BORDI NERI
+    % \flowband[opacita]{colore_sx}{colore_dx}{nodo_sx}{top_frac_sx}{bot_frac_sx}{nodo_dx}{top_frac_dx}{bot_frac_dx}
+    % ==========================================================================
+    \newcommand{\flowband}[9][1.0]{%
+        \path let \p1 = ($(#4.north east)!#5!(#4.south east)$),
+                  \p2 = ($(#4.north east)!#6!(#4.south east)$),
+                  \p3 = ($(#7.north west)!#8!(#7.south west)$),
+                  \p4 = ($(#7.north west)!#9!(#7.south west)$),
+                  \n1 = {0.48*(\x3 - \x1)} in
+        \pgfextra{
+            % Riempimento a tutta altezza con gradiente cromatico puro
+            \shade[left color=#2, right color=#3, opacity=#1]
+                (\x1 - 0.04cm, \y1) -- (\x1, \y1)
+                .. controls ($(\x1, \y1) + (\n1, 0)$) and ($(\p3) - (\n1, 0)$) .. (\p3)
+                -- (\x3 + 0.04cm, \y3) -- (\x4 + 0.04cm, \y4) -- (\p4)
+                .. controls ($(\p4) - (\n1, 0)$) and ($(\x2, \y2) + (\n1, 0)$) .. (\p2)
+                -- (\x2 - 0.04cm, \y2) -- cycle;
+            % Linea di contorno superiore NERA
+            \draw[black!85, line width=0.55pt]
+                (\p1) .. controls ($(\p1) + (\n1, 0)$) and ($(\p3) - (\n1, 0)$) .. (\p3);
+            % Linea di contorno inferiore NERA
+            \draw[black!85, line width=0.55pt]
+                (\p2) .. controls ($(\p2) + (\n1, 0)$) and ($(\p4) - (\n1, 0)$) .. (\p4);
+        };%
+    }
+
+    % ==========================================================================
+    % POSIZIONAMENTO DEI BLOCCHI: TUTTI UGUALI IN ALTEZZA E CENTRATI A y = 0
+    % ==========================================================================
+
+    % 1. DATASET (2 nodi simmetrici a y = +/- 0.80)
+    \node[sankeycard=skblue_bg, minimum width=2.5cm] (d_no) at (0.0,  0.80) {\textbf{\texttt{no\_human}}};
+    \node[sankeycard=skblue_bg, minimum width=2.5cm] (d_hu) at (0.0, -0.80) {\textbf{\texttt{human}}};
+
+    % 2. BUCKETING (3 nodi simmetrici a y = +1.20, 0, -1.20)
+    \node[sankeycard=skteal_bg, minimum width=3.6cm] (b_pfx) at (4.7,  1.20) {\textbf{\texttt{PREFIX-LENGTH}}};
+    \node[sankeycard=skteal_bg, minimum width=3.6cm] (b_cmp) at (4.7,  0.00) {\textbf{\texttt{COMPONENT}}};
+    \node[sankeycard=skteal_bg, minimum width=3.6cm] (b_tw)  at (4.7, -1.20) {\textbf{\texttt{COMPONENT-TIME-WARPED}}};
+
+    % 3. VETTORIALIZZAZIONE (2 nodi simmetrici a y = +/- 0.80)
+    \node[sankeycard=skteal_bg, minimum width=2.5cm] (v_2d) at (9.6,  0.80) {\textbf{Matrice 2D}};
+    % 3. ENCODING DEI DATI (2 nodi simmetrici a y = +/- 0.80)
+    \node[sankeycard=skteal_bg, minimum width=2.5cm] (v_2d) at (9.6,  0.80) {\textbf{Tabella 2D}};
+    \node[sankeycard=skteal_bg, minimum width=2.5cm] (v_3d) at (9.6, -0.80) {\textbf{Tensore 3D}};
+
+    % 4. MODELLI (4 nodi simmetrici a y = +1.40, +0.47, -0.47, -1.40)
+    \node[sankeycard=skgreen_bg, minimum width=3.1cm] (m_dt)   at (14.8,  1.40) {\textbf{Decision Tree}};
+    \node[sankeycard=skgreen_bg, minimum width=3.1cm] (m_rf)   at (14.8,  0.47) {\textbf{Random Forest}};
+    \node[sankeycard=skgreen_bg, minimum width=3.1cm] (m_xgb)  at (14.8, -0.47) {\textbf{XGBoost}};
+    \node[sankeycard=skgreen_bg, minimum width=3.1cm] (m_lstm) at (14.8, -1.40) {\textbf{LSTM}};
+
+    % 5. VALUTAZIONE (1 nodo centrale a y = 0.0)
+    \node[sankeycard=skorange_bg, minimum width=2.9cm, minimum height=0.95cm] (eval_box) at (20.10, 0.0) {\textbf{Modello con}\\\textbf{MCC mediano}};
+
+    % 6. SPIEGABILITÀ (3 nodi simmetrici a y = +1.20, 0.00, -1.20)
+    \node[sankeycard=skpurple_bg, minimum width=3.1cm] (x_tree) at (24.6,  1.20) {\textbf{TreeExplainer}};
+    \node[sankeycard=skpurple_bg, minimum width=3.1cm] (x_deep) at (24.6,  0.00) {\textbf{DeepExplainer}};
+    \node[sankeycard=skpurple_bg, minimum width=3.1cm] (x_kern) at (24.6, -1.20) {\textbf{KernelExplainer}};
+
+    % ==========================================================================
+    % BORDI NERI SUI NODI (SOPRA, SOTTO E SUI LATI LIBERI SENZA NASTRI)
+    % ==========================================================================
+    
+    % Bordi superiore e inferiore su tutti i nodi (NERI)
+    \foreach \n in {d_no, d_hu, b_pfx, b_cmp, b_tw, v_2d, v_3d, m_dt, m_rf, m_xgb, m_lstm, eval_box, x_tree, x_deep, x_kern} {
+        \draw[black!85, line width=0.55pt] (\n.north west) -- (\n.north east);
+        \draw[black!85, line width=0.55pt] (\n.south west) -- (\n.south east);
+    }
+
+    % Chiusura lato SINISTRO sui nodi iniziali del Dataset
+    \draw[black!85, line width=0.55pt] (d_no.north west) -- (d_no.south west);
+    \draw[black!85, line width=0.55pt] (d_hu.north west) -- (d_hu.south west);
+
+    % Chiusura lato DESTRO sui nodi finali di Spiegabilità
+    \draw[black!85, line width=0.55pt] (x_tree.north east) -- (x_tree.south east);
+    \draw[black!85, line width=0.55pt] (x_deep.north east) -- (x_deep.south east);
+    \draw[black!85, line width=0.55pt] (x_kern.north east) -- (x_kern.south east);
+
+    % ==========================================================================
+    % NASTRI SANKEY SULLO SFONDO
+    % ==========================================================================
+    \begin{scope}[on background layer]
+        % --- 1. DA DATASET (skblue_bg) A BUCKETING (skteal_bg) ---
+        % da no_human (3 frazioni uguali)
+        \flowband{skblue_bg}{skteal_bg}{d_no}{0.00}{0.33}{b_pfx}{0.00}{0.50}
+        \flowband{skblue_bg}{skteal_bg}{d_no}{0.33}{0.67}{b_cmp}{0.00}{0.50}
+        \flowband{skblue_bg}{skteal_bg}{d_no}{0.67}{1.00}{b_tw}{0.00}{0.50}
+
+        % da human (3 frazioni uguali)
+        \flowband{skblue_bg}{skteal_bg}{d_hu}{0.00}{0.33}{b_pfx}{0.50}{1.00}
+        \flowband{skblue_bg}{skteal_bg}{d_hu}{0.33}{0.67}{b_cmp}{0.50}{1.00}
+        \flowband{skblue_bg}{skteal_bg}{d_hu}{0.67}{1.00}{b_tw}{0.50}{1.00}
+
+        % --- 2. DA BUCKETING (skteal_bg) A VETTORIALIZZAZIONE (skteal_bg) ---
+        % PREFIX-LENGTH verso 2D e 3D
+        \flowband{skteal_bg}{skteal_bg}{b_pfx}{0.00}{0.50}{v_2d}{0.00}{0.33}
+        \flowband{skteal_bg}{skteal_bg}{b_pfx}{0.50}{1.00}{v_3d}{0.00}{0.33}
+
+        % COMPONENT verso 2D e 3D
+        \flowband{skteal_bg}{skteal_bg}{b_cmp}{0.00}{0.50}{v_2d}{0.33}{0.67}
+        \flowband{skteal_bg}{skteal_bg}{b_cmp}{0.50}{1.00}{v_3d}{0.33}{0.67}
+
+        % TIME-WARPED verso 2D e 3D
+        \flowband{skteal_bg}{skteal_bg}{b_tw}{0.00}{0.50}{v_2d}{0.67}{1.00}
+        \flowband{skteal_bg}{skteal_bg}{b_tw}{0.50}{1.00}{v_3d}{0.67}{1.00}
+
+        % --- 3. DA VETTORIALIZZAZIONE (skteal_bg) A MODELLI (skgreen_bg) ---
+        % Matrice 2D verso DT, RF, XGB
+        \flowband{skteal_bg}{skgreen_bg}{v_2d}{0.00}{0.33}{m_dt}{0.00}{1.00}
+        \flowband{skteal_bg}{skgreen_bg}{v_2d}{0.33}{0.67}{m_rf}{0.00}{1.00}
+        \flowband{skteal_bg}{skgreen_bg}{v_2d}{0.67}{1.00}{m_xgb}{0.00}{1.00}
+
+        % Tensore 3D verso LSTM
+        \flowband{skteal_bg}{skgreen_bg}{v_3d}{0.00}{1.00}{m_lstm}{0.00}{1.00}
+
+        % --- 4. DA MODELLI (skgreen_bg) A VALUTAZIONE (skorange_bg) ---
+        \flowband{skgreen_bg}{skorange_bg}{m_dt}{0.00}{1.00}{eval_box}{0.00}{0.25}
+        \flowband{skgreen_bg}{skorange_bg}{m_rf}{0.00}{1.00}{eval_box}{0.25}{0.50}
+        \flowband{skgreen_bg}{skorange_bg}{m_xgb}{0.00}{1.00}{eval_box}{0.50}{0.75}
+        \flowband{skgreen_bg}{skorange_bg}{m_lstm}{0.00}{1.00}{eval_box}{0.75}{1.00}
+
+        % --- 5. DA VALUTAZIONE (skorange_bg) A SPIEGABILITÀ (skpurple_bg) ---
+        \flowband{skorange_bg}{skpurple_bg}{eval_box}{0.00}{0.33}{x_tree}{0.00}{1.00}
+        \flowband{skorange_bg}{skpurple_bg}{eval_box}{0.33}{0.67}{x_deep}{0.00}{1.00}
+        \flowband{skorange_bg}{skpurple_bg}{eval_box}{0.67}{1.00}{x_kern}{0.00}{1.00}
+    \end{scope}
+
+    % ==========================================================================
+    % INTESTAZIONI SUPERIORI A TUTTA LARGHEZZA DI FASE (FONT 11pt \normalsize)
+    % ==========================================================================
+    \node[headbanner={skblue_head}{4.95cm}]   at (0.00,  2.6) {1. Dataset};
+    \node[headbanner={skteal_head}{9.40cm}]   at (7.15,  2.6) {2. Bucketing ed encoding};
+    \node[headbanner={skgreen_head}{6.00cm}]  at (14.85, 2.6) {3. Addestramento e ottimizzazione};
+    \node[headbanner={skorange_head}{4.50cm}] at (20.10, 2.6) {4. Valutazione};
+    \node[headbanner={skpurple_head}{4.50cm}] at (24.60, 2.6) {5. Spiegabilità};
+
+    % ==========================================================================
+    % LINEE TRATTEGGIATE VERTICALI (PARTONO SOTTO LE TARGHETTE FINO IN FONDO)
+    % ==========================================================================
+    % Divisore Fase 1 -> Fase 2 (x = 2.475)
+    \draw[black!35, dashed, line width=0.7pt, dash pattern=on 4pt off 3.5pt] (2.475, 2.25) -- (2.475, -2.1);
+
+    % Divisore Fase 2 -> Fase 3 (x = 11.85)
+    \draw[black!35, dashed, line width=0.7pt, dash pattern=on 4pt off 3.5pt] (11.85, 2.25) -- (11.85, -2.1);
+
+    % Divisore Fase 3 -> Fase 4 (x = 17.85)
+    \draw[black!35, dashed, line width=0.7pt, dash pattern=on 4pt off 3.5pt] (17.85, 2.25) -- (17.85, -2.1);
+
+    % Divisore Fase 4 -> Fase 5 (x = 22.35)
+    \draw[black!35, dashed, line width=0.7pt, dash pattern=on 4pt off 3.5pt] (22.35, 2.25) -- (22.35, -2.1);
+
+\end{tikzpicture}
+
+\end{document}

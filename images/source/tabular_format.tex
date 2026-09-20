@@ -1,0 +1,134 @@
+%! TeX root = ../../main.tex
+\documentclass[tikz,border=10pt,11pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds, calc, decorations.pathreplacing}
+
+\begin{document}
+
+% ==============================================================================
+% DEFINIZIONE COLORI (COERENTE CON ENCODING_STRATEGIES E SETTINGS)
+% ==============================================================================
+\definecolor{hdr_bg}{RGB}{242, 245, 249}        % Sfondo intestazioni griglia
+\definecolor{hdr_txt}{RGB}{25, 35, 50}          % Testo intestazioni griglia
+\definecolor{pad_bg}{RGB}{248, 249, 250}        % Sfondo tenue per celle di padding
+\definecolor{pad_txt}{RGB}{100, 100, 100}       % Testo grigio per padding
+
+\begin{tikzpicture}[
+    font=\footnotesize,
+    % Stile cella intestazione (colhdr)
+    colhdr/.style={
+        draw=black!80,
+        line width=0.55pt,
+        fill=hdr_bg,
+        inner sep=0pt,
+        minimum height=0.58cm,
+        font=\footnotesize\bfseries,
+        text=hdr_txt,
+        align=center
+    },
+    % Stile cella dati standard
+    cell/.style={
+        draw=black!80,
+        line width=0.55pt,
+        fill=white,
+        inner sep=0pt,
+        minimum height=0.58cm,
+        font=\footnotesize,
+        text=black,
+        align=center
+    },
+    % Stile cella per padding
+    padcell/.style={
+        draw=black!80,
+        line width=0.55pt,
+        fill=pad_bg,
+        inner sep=0pt,
+        minimum height=0.58cm,
+        font=\footnotesize\itshape,
+        text=pad_txt,
+        align=center
+    }
+]
+
+    % ==========================================================================
+    % PARAMETRI GEOMETRICI: LARGHEZZE E CENTRI COLONNE PERFETTAMENTE ALLINEATI
+    % ==========================================================================
+    % Colonne:
+    % 1: Traccia      [ 0.00,  1.75] -> w = 1.75, cx = 0.88
+    % 2: Label        [ 1.75,  2.65] -> w = 0.90, cx = 2.20
+    % 3: act_1        [ 2.65,  3.65] -> w = 1.00, cx = 3.15
+    % 4: rula_1       [ 3.65,  4.75] -> w = 1.10, cx = 4.20
+    % 5: act_2        [ 4.75,  5.75] -> w = 1.00, cx = 5.25
+    % 6: rula_2       [ 5.75,  6.85] -> w = 1.10, cx = 6.30
+    % 7: act_3        [ 6.85,  8.10] -> w = 1.25, cx = 7.47
+    % 8: rula_3       [ 8.10,  9.45] -> w = 1.35, cx = 8.78
+
+    \def\wColA{1.75cm} \def\xColA{0.88}
+    \def\wColB{0.90cm} \def\xColB{2.20}
+    \def\wColC{1.00cm} \def\xColC{3.15}
+    \def\wColD{1.10cm} \def\xColD{4.20}
+    \def\wColE{1.00cm} \def\xColE{5.25}
+    \def\wColF{1.10cm} \def\xColF{6.30}
+    \def\wColG{1.25cm} \def\xColG{7.47}
+    \def\wColH{1.35cm} \def\xColH{8.78}
+
+    % Quote Y dei centri riga (altezza cella = 0.58cm)
+    \def\yHdr{0.0}
+    \def\yRowA{-0.58}
+    \def\yRowB{-1.16}
+
+    % ==========================================================================
+    % RIGA 0: INTESTAZIONE (HEADER)
+    % ==========================================================================
+    \node[colhdr, minimum width=\wColA] at (\xColA, \yHdr) {Traccia};
+    \node[colhdr, minimum width=\wColB] at (\xColB, \yHdr) {Label};
+    \node[colhdr, minimum width=\wColC] at (\xColC, \yHdr) {\textbf{act\_1}};
+    \node[colhdr, minimum width=\wColD] at (\xColD, \yHdr) {\textbf{rula\_1}};
+    \node[colhdr, minimum width=\wColE] at (\xColE, \yHdr) {\textbf{act\_2}};
+    \node[colhdr, minimum width=\wColF] at (\xColF, \yHdr) {\textbf{rula\_2}};
+    \node[colhdr, minimum width=\wColG] at (\xColG, \yHdr) {\textbf{act\_3}};
+    \node[colhdr, minimum width=\wColH] at (\xColH, \yHdr) {\textbf{rula\_3}};
+
+    % ==========================================================================
+    % RIGA 1: CASSETTO 01 (Label = 1, traccia regolare completa)
+    % ==========================================================================
+    \node[cell, minimum width=\wColA] at (\xColA, \yRowA) {Cassetto 01};
+    \node[cell, minimum width=\wColB] at (\xColB, \yRowA) {1};
+    \node[cell, minimum width=\wColC] at (\xColC, \yRowA) {2};
+    \node[cell, minimum width=\wColD] at (\xColD, \yRowA) {3.5};
+    \node[cell, minimum width=\wColE] at (\xColE, \yRowA) {4};
+    \node[cell, minimum width=\wColF] at (\xColF, \yRowA) {5.0};
+    \node[cell, minimum width=\wColG] at (\xColG, \yRowA) {1};
+    \node[cell, minimum width=\wColH] at (\xColH, \yRowA) {2.0};
+
+    % ==========================================================================
+    % RIGA 2: CASSETTO 05 (Label = 0, anomala con padding su t=3)
+    % ==========================================================================
+    \node[cell,    minimum width=\wColA] at (\xColA, \yRowB) {Cassetto 05};
+    \node[cell,    minimum width=\wColB] at (\xColB, \yRowB) {0};
+    \node[cell,    minimum width=\wColC] at (\xColC, \yRowB) {2};
+    \node[cell,    minimum width=\wColD] at (\xColD, \yRowB) {4.0};
+    \node[cell,    minimum width=\wColE] at (\xColE, \yRowB) {3};
+    \node[cell,    minimum width=\wColF] at (\xColF, \yRowB) {6.5};
+    \node[padcell, minimum width=\wColG] at (\xColG, \yRowB) {0 \textit{(pad)}};
+    \node[padcell, minimum width=\wColH] at (\xColH, \yRowB) {0.0 \textit{(pad)}};
+
+    % ==========================================================================
+    % GRAFFE DIMENSIONALI: N A DESTRA, T x D SOTTO
+    % ==========================================================================
+    % Graffa a destra: dimensione N (righe delle istanze/tracce)
+    \draw[black!85, line width=0.55pt, decorate, decoration={brace, amplitude=4pt}]
+        (9.57, -0.29) -- (9.57, -1.45)
+        node[midway, right=5pt, font=\small] {$N$};
+
+    % Graffa in basso: dimensione T x D (colonne di feature concatenate)
+    \draw[black!85, line width=0.55pt, decorate, decoration={brace, mirror, amplitude=4pt}]
+        (2.65, -1.57) -- (9.45, -1.57)
+        node[midway, below=5pt, font=\small] {$T \cdot D$};
+
+\end{tikzpicture}
+
+\end{document}
