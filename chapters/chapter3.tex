@@ -13,9 +13,9 @@ L'obiettivo metodologico dell'esperimento consiste nella progettazione e valutaz
 
 Come illustrato nella Figura~\ref{fig:pipeline_architettura}, la pipeline si articola in 5 fasi principali:
 \begin{enumerate}
-    \item \textbf{Dataset}: caricamento dei log di assemblaggio ed estrazione delle feature nelle due configurazioni \texttt{no\_human} e \texttt{human}, con partizionamento in 10 fold per la Cross-Validation.
+    \item \textbf{Dataset}: caricamento dei log di assemblaggio ed estrazione delle feature nelle due configurazioni \texttt{no\_human} e \texttt{human}, con partizionamento in 10 fold stratificati per la Cross-Validation.
     \item \textbf{Bucketing ed encoding}: suddivisione e codifica delle tracce secondo tre diverse strategie di bucketing, con rappresentazione tabulare (2D) per i modelli classici e tensoriale (3D) per la rete neurale ricorrente (LSTM).
-\item \textbf{Addestramento e ottimizzazione}: addestramento dei quattro classificatori (Decision Tree, Random Forest, XGBoost e LSTM) mediante Nested Cross-Validation e ottimizzazione bayesiana degli iperparametri (Hyperopt TPE) orientata alla massimizzazione del coefficiente MCC sul validation set.
+\item \textbf{Addestramento e ottimizzazione}: addestramento dei quattro classificatori (Decision Tree, Random Forest, XGBoost e LSTM) mediante Stratified Nested Cross-Validation e ottimizzazione bayesiana degli iperparametri (Hyperopt TPE) orientata alla massimizzazione del coefficiente MCC sul validation set.
     \item \textbf{Valutazione}: calcolo delle metriche di classificazione aggregate sui test set di tutti i 10 fold di Cross-Validation e identificazione del fold con MCC mediano come istanza rappresentativa. 
     \item \textbf{Spiegabilità}: attribuzione di feature importance tramite tecnica SHAP con confronto tra metodi di spiegabilità \textit{model-specific} (\texttt{TreeExplainer} per Decision Tree, Random Forest, XGBoost; \texttt{DeepExplainer} per LSTM) e agnostici (\texttt{KernelExplainer}).
 \end{enumerate}
@@ -39,7 +39,7 @@ Aggiunge alla baseline di processo dei segnali riferiti all'operatore umano. In 
     \item \texttt{Movement Dynamics}: quantifica il livello di movimento dell'operatore. Comprende sia la media che la deviazione standard della posizione del tronco durante la stessa azione.
 \end{itemize}
 
-Le tracce reali del dataset sono già pre-suddivise secondo uno schema di Nested 10-Fold Cross-Validation, in cui ciascun fold ripartisce i dati in \textbf{Training} (\textasciitilde 70\% delle tracce, per l'addestramento dei modelli), \textbf{Validation} (\textasciitilde 20\%, per l'ottimizzazione degli iperparametri) e \textbf{Testing} (10\%, riservato al calcolo delle metriche di performance finali).
+Le tracce reali del dataset sono già pre-suddivise secondo uno schema di Stratified Nested 10-Fold Cross-Validation, in cui ciascun fold preserva la proporzione delle classi e ripartisce i dati in \textbf{Training} (\textasciitilde 70\% delle tracce, per l'addestramento dei modelli), \textbf{Validation} (\textasciitilde 20\%, per l'ottimizzazione degli iperparametri) e \textbf{Testing} (10\%, riservato al calcolo delle metriche di performance finali).
 
 \section{Bucketing ed encoding}
 \label{sec:bucketing_encoding}
@@ -80,7 +80,7 @@ In entrambi i casi i dati si sviluppano considerando le seguenti 3 dimensioni:
 
 \paragraph{Formato tabulare.}
 La rappresentazione tabulare di dimensione $(N \times (T \cdot D))$ viene impiegata per i modelli basati su alberi (Decision Tree, Random Forest e XGBoost). Come osservato da Vian, poiché i prefissi contengono attributi sia categorici che continui, va adottata una strategia ibrida: i dati continui vengono mantenuti nel loro valore originario, i dati categorici sono tradotti secondo una logica di \textit{one-hot encoding}. La dimensione temporale è rappresentata orizzontalmente su più attributi secondo la convenzione \texttt{<feature>\_<step t>}.
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
     \input{images/source/tabular_format.tex}
     \caption{Esempio di prefisso trasformato in formato tabulare}
@@ -89,7 +89,7 @@ La rappresentazione tabulare di dimensione $(N \times (T \cdot D))$ viene impieg
 
 \paragraph{Formato tensoriale.}
 Per l'architettura LSTM i prefissi trasformati in formato tabulare vengono mappati in tensori tridimensionali di forma $(N, T, D)$. La dinamica temporale del processo viene così preservata lungo la sequenza, consentendo alla rete ricorrente di elaborare gli eventi in ordine cronologico.
-\begin{figure}[htbp]
+\begin{figure}[H]
     \centering
     \input{images/source/tensor_format.tex}
     \caption{Esempio di prefisso trasformato in formato tensoriale}
@@ -98,9 +98,63 @@ Per l'architettura LSTM i prefissi trasformati in formato tabulare vengono mappa
 
 \section{Addestramento e ottimizzazione}
 \label{sec:addestramento_ottimizzazione}
+Successivamente la pipeline prosegue con l'addestramento e l'ottimizzazione di più classificatori. I passi principali sono:
+\begin{enumerate*}[label=(\roman*)]
+    \item la scelta dei modelli da implementare
+    \item l'ottimizzazione dei modelli utilizzando training e validation set
+\end{enumerate*}.
+
+
+\subsection{Panoramica dei classificatori}
+Sono stati scelti modelli comunemente utilizzati per i task di Predictive Process Monitoring, indagando l'utilizzo di classificatori ad albero e Long Short-Term Memory (LSTM). Diversamente da Vian~\cite{ppm-human-centered-vian2024}, il cui obiettivo è la sola valutazione dell'impatto delle feature umane, lo scopo dell'esperimento è analizzare la qualità delle predizioni con modelli più robusti ma più complessi nella loro interpretazione.
+
+\begin{enumerate}
+    \item \textbf{Decision Tree}: già impiegato da Vian~\cite{ppm-human-centered-vian2024}, funge da baseline di riferimento.
+    \item \textbf{Random Forest}: introdotto come modello \textit{ensemble} di tipo \textit{bagging}, per valutare un miglioramento nelle predizioni con l'aggregazione di più alberi.
+    \item \textbf{XGBoost}: modello \textit{ensemble} scelto per valutare l'efficacia del \textit{gradient boosting} sui dati tabulari rispetto all'applicazione del \textit{bagging} delle Random Forest.
+    \item \textbf{LSTM}: transizione al \textit{deep learning}, scelto per indagare la dinamica temporale in modo sequenziale e non codificata in formato tabulare.
+\end{enumerate}
+
+\subsection{Procedura di addestramento e ottimizzazione degli iperparametri}
+Come conseguenza della procedura di addestramento è addestrato e salvato un modello per ogni
+\begin{enumerate*}[label=(\roman*)]
+    \item sottogruppo di dataset,
+    \item classificatore e
+    \item strategia di generazione dei prefissi
+\end{enumerate*}.
+
+Come nell'architettura di Vian~\cite{ppm-human-centered-vian2024}, la pipeline segue uno schema di Stratified Nested 10-Fold Cross-Validation:
+\begin{itemize}
+    \item Inner loop: il modello viene addestrato sui dati di \textit{training}, mentre i dati di \textit{validation} sono utilizzati nell'algoritmo di ricerca bayesiana per identificare la configurazione di iperparametri che massimizza il coefficiente MCC. Nel caso di XGBoost e LSTM sono calcolate anche delle metriche di \textit{early-stopping} (rispettivamente il numero ottimale di alberi e il numero di epoche ideali).
+    \item Outer loop: selezionati i migliori iperparametri viene addestrato un modello finale sulla concatenazione dei dati di \textit{training} e \textit{validation}, poi valutato sul \textit{testing set}. Tale approccio permette di estendere la configurazione trovata su un dataset più numeroso e migliorare la generalizzazione del modello. Nel caso di XGBoost e LSTM il modello candidato viene eseguito per il numero di alberi o epoche identificato precedentemente.
+\end{itemize}
+
+\subsection{Spazio di ricerca degli iperparametri}
+Per ogni classificatore sono stati considerati gli spazi di ricerca riportati nella Tabella~\ref{tab:search_spaces}:
+
+\input{tables/search_spaces.tex}
+
 
 \section{Valutazione}
 \label{sec:valutazione}
+Lo schema di Stratified Nested 10-Fold Cross-Validation prevede per ogni iterazione 1 fold di \textit{test} e i rimanenti 9 fold suddivisi tra \textit{training} e \textit{validation}. In particolare, le metriche di valutazione finali sono calcolate mediando i risultati sui \textit{test set} di tutti e 10 i fold, mentre il modello candidato (utilizzato nei passi successivi) corrisponde al classificatore il cui coefficiente MCC è il valore mediano tra i 10 calcolati, ordinati in ordine crescente.
+
+In continuità con lo studio di Vian~\cite{ppm-human-centered-vian2024}, la valutazione delle predizioni si concentra su tre metriche derivate dalla matrice di confusione binaria: Precision, Recall e il Matthews Correlation Coefficient (MCC).
+
+Precision e Recall variano da 0 a 1 e indicano rispettivamente l'affidabilità delle predizioni positive e la sensibilità del modello nell'identificare le istanze positive reali.
+\begin{equation}
+    \begin{gathered}
+        \text{Precision} = \frac{TP}{TP + FP}, \qquad
+        \text{Recall} = \frac{TP}{TP + FN} \\[1.5ex]
+    \end{gathered}
+    \label{eq:precision_recall_metrics}
+\end{equation}
+
+Il coefficiente MCC assume valori compresi tra -1 (predizioni completamente errate), 0 (predizioni casuali) e +1 (predizioni corrette), fornendo una stima robusta che combina tutti i valori della matrice di confusione.
+\begin{equation}
+    \text{MCC} = \frac{TP \times TN - FP \times FN}{\sqrt{(TP + FP)(TP + FN)(TN + FP)(TN + FN)}}
+    \label{eq:mcc_metric}
+\end{equation}
 
 \section{Spiegabilità}
 \label{sec:spiegabilita}
