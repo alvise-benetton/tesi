@@ -158,6 +158,59 @@ Il coefficiente MCC assume valori compresi tra -1 (predizioni completamente erra
 
 \section{Spiegabilità}
 \label{sec:spiegabilita}
+Il modello candidato memorizzato al termine della Cross-Validation è utilizzato per una successiva fase di explainability. Differentemente da Vian~\cite{ppm-human-centered-vian2024} che impiega il solo Decision Tree per l'intrinseca interpretabilità, la pipeline proposta estende il task di Predictive Process Monitoring a classificatori black-box (Random Forest, XGBoost, LSTM) rendendo necessario lo sviluppo di una fase esplicativa.
+
+\subsection{Scelta del framework SHAP}
+Come framework di spiegabilità è stato scelto SHAP (\textit{SHapley Additive exPlanations})~\cite{xai-shap-lundberg2017} per il suo forte fondamento teorico.
+In particolare la scelta metodologica è motivata dalla proprietà di additività locale:
+\begin{equation}
+    f(x) = \phi_0 + \sum_{i=1}^{M} \phi_i
+    \label{eq:shap_additivity}
+\end{equation}
+in cui la predizione del modello $f(x)$ è definita come la somma del valore atteso di base $\phi_0 = \mathbb{E}[f(X)]$ e dei singoli contributi $\phi_i$ attribuiti a ciascuna delle $M$ features.
+
+Poiché i valori $\phi_i$ sono espressi nella medesima unità di misura dell'output e godono di linearità additiva, possono essere composti algebricamente permettendo
+\begin{enumerate*}[label=(\roman*)]
+    \item l'estensione dell'interpretazione dal livello locale a quello globale con diversi livelli di granularità
+    \item l'aggregazione delle feature in domini semantici o temporali omogenei
+    \item il confronto diretto tra tecniche \textit{model-specific} ed agnostiche
+\end{enumerate*}.
+
+\subsection{Interpretabilità dei nomi delle features}
+Il modulo innanzitutto implementa un mapping custom dal nome grezzo delle features a una denominazione intelligibile, permettendo un'analisi direttamente al livello con più bassa granularità.
+Per le features categoriche ricavate tramite \textit{one-hot encoding} viene interrogato l'encoder originale come fonte di verità, mentre per le metriche posturali viene applicato un mapping che traduce le sigle grezze in etichette indicanti l'articolazione, il livello di rischio e lo step temporale associato.
+
+È così configurato il livello di aggregazione atomico (\texttt{None}).
+
+
+\subsection{Aggregazione delle features}
+L'aggregazione delle features è prevista sia a livello di dominio che a livello temporale.
+\paragraph{Livello di dominio} Permette di comprendere l'importanza che ogni ambito assume nel processo di predizione.
+\begin{itemize}
+    \item Livello fine (\texttt{FINE}): raggruppa le features posturali nei 4 distretti anatomici
+    \begin{enumerate*}[label=(\roman*)]
+        \item RULA Wrist (polso)
+        \item RULA Upper Arm (braccio)
+        \item RULA Lower Arm (avambraccio)
+        \item RULA Neck (collo)
+    \end{enumerate*}. A queste affianca le altre dimensioni riguardanti l'operatore e la baseline di processo.
+    
+    \item Livello semantico (\texttt{SEMANTIC}): raggruppa le features posturali in un unico gruppo RULA Ergonomics, mantenendo separate le altre dimensioni.
+    \item Livello macro (\texttt{MACRO}): suddivisione binaria che divide tutte le features nei gruppi
+    \begin{enumerate*}[label=(\roman*)]
+        \item Human
+        \item Process Log
+    \end{enumerate*}.
+\end{itemize}
+
+\paragraph{Livello temporale} Permette di comprendere come ogni istante della traccia concentri l'attenzione.
+\begin{itemize}
+    \item Livello step (\texttt{STEP}): aggrega per passo temporale estraendo il suffisso \texttt{\_t} da ogni feature.
+\end{itemize}
+
+
+\subsection{Confronto tra approcci \textit{model-specific} e agnostici}
+\subsection{Valutazione della generalizzabilità}
 
 \section{Stack tecnologico}
 \label{sec:stack}
