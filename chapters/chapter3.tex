@@ -1,17 +1,19 @@
 \chapter{Metodologia e architettura}
 \label{cha:methodology}
 
+Il capitolo descrive le scelte metodologiche e le tecniche utilizzate per condurre l'esperimento, replicando l'impostazione di Vian \cite{ppm-human-centered-vian2024} ed estendendola attraverso l'introduzione di classificatori a complessità crescente, affiancati da un modulo di \textit{explainability}.
+
 \section{Architettura generale}
 \label{sec:architecture}
-L'obiettivo metodologico dell'esperimento consiste nella progettazione e valutazione di un sistema applicato ad attività di assemblaggio manuale nell'ambito di Predictive Process Monitoring (PPM), implementato per predire in anticipo il successo o il fallimento del montaggio associando o meno ai tradizionali registri di processo i segnali posturali dell'operatore. Si configura quindi come un task di \textit{outcome-prediction} (classificazione binaria) seguito da un modulo di spiegabilità dei modelli utilizzati.
+L'obiettivo metodologico dell'esperimento consiste nella progettazione e valutazione di un sistema applicato ad attività di assemblaggio manuale nell'ambito di Predictive Process Monitoring (PPM), implementato per predire in anticipo il successo o il fallimento del montaggio associando o meno ai tradizionali registri di processo i segnali posturali dell'operatore.
 \begin{figure}[htbp]
     \centering
     \inputtikz{images/source/pipeline_architecture.tex}
     \caption{Architettura della pipeline sperimentale}
-    \label{fig:pipeline_architettura}
+    \label{fig:pipeline_architecture}
 \end{figure}
 
-Come illustrato nella Figura~\ref{fig:pipeline_architettura}, la pipeline si articola in 5 fasi principali:
+Come illustrato nella Figura~\ref{fig:pipeline_architecture}, la pipeline si articola in 5 fasi principali:
 \begin{enumerate}
     \item \textbf{Dataset}: caricamento dei log di assemblaggio ed estrazione delle feature nelle due configurazioni \texttt{no\_human} e \texttt{human}, con partizionamento in 10 fold stratificati per la Cross-Validation.
     \item \textbf{Bucketing ed encoding}: suddivisione e codifica delle tracce secondo tre diverse strategie di bucketing, con rappresentazione tabulare (2D) per i modelli classici e tensoriale (3D) per la rete neurale ricorrente (LSTM).
@@ -97,7 +99,7 @@ Per l'architettura LSTM i prefissi trasformati in formato tabulare vengono mappa
 \end{figure}
 
 \section{Addestramento e ottimizzazione}
-\label{sec:addestramento_ottimizzazione}
+\label{sec:training_optimization}
 Successivamente la pipeline prosegue con l'addestramento e l'ottimizzazione di più classificatori. I passi principali sono:
 \begin{enumerate*}[label=(\roman*)]
     \item la scelta dei modelli da implementare
@@ -106,6 +108,7 @@ Successivamente la pipeline prosegue con l'addestramento e l'ottimizzazione di p
 
 
 \subsection{Panoramica dei classificatori}
+\label{subsec:classifiers_overview}
 Sono stati scelti modelli comunemente utilizzati per i task di Predictive Process Monitoring, indagando l'utilizzo di classificatori ad albero e Long Short-Term Memory (LSTM). Diversamente da Vian~\cite{ppm-human-centered-vian2024}, il cui obiettivo è la sola valutazione dell'impatto delle feature umane, lo scopo dell'esperimento è analizzare la qualità delle predizioni con modelli più robusti ma più complessi nella loro interpretazione.
 
 \begin{enumerate}
@@ -116,6 +119,7 @@ Sono stati scelti modelli comunemente utilizzati per i task di Predictive Proces
 \end{enumerate}
 
 \subsection{Procedura di addestramento e ottimizzazione degli iperparametri}
+\label{subsec:training_procedure}
 Come conseguenza della procedura di addestramento è addestrato e salvato un modello per ogni
 \begin{enumerate*}[label=(\roman*)]
     \item sottogruppo di dataset,
@@ -130,13 +134,14 @@ Come nell'architettura di Vian~\cite{ppm-human-centered-vian2024}, la pipeline s
 \end{itemize}
 
 \subsection{Spazio di ricerca degli iperparametri}
+\label{subsec:search_spaces}
 Per ogni classificatore sono stati considerati gli spazi di ricerca riportati nella Tabella~\ref{tab:search_spaces}:
 
 \input{tables/search_spaces.tex}
 
 
 \section{Valutazione}
-\label{sec:valutazione}
+\label{sec:evaluation}
 Lo schema di Stratified Nested 10-Fold Cross-Validation prevede per ogni iterazione 1 fold di \textit{test} e i rimanenti 9 fold suddivisi tra \textit{training} e \textit{validation}. In particolare, le metriche di valutazione finali sono calcolate mediando i risultati sui \textit{test set} di tutti e 10 i fold, mentre il modello candidato (utilizzato nei passi successivi) corrisponde al classificatore il cui coefficiente MCC è il valore mediano tra i 10 calcolati, ordinati in ordine crescente.
 
 In continuità con lo studio di Vian~\cite{ppm-human-centered-vian2024}, la valutazione delle predizioni si concentra su tre metriche derivate dalla matrice di confusione binaria: Precision, Recall e il Matthews Correlation Coefficient (MCC).
@@ -157,10 +162,11 @@ Il coefficiente MCC assume valori compresi tra -1 (predizioni completamente erra
 \end{equation}
 
 \section{Spiegabilità}
-\label{sec:spiegabilita}
+\label{sec:pipeline_explainability}
 Il modello candidato memorizzato al termine della Cross-Validation è utilizzato per una successiva fase di explainability. Differentemente da Vian~\cite{ppm-human-centered-vian2024} che impiega il solo Decision Tree per l'intrinseca interpretabilità, la pipeline proposta estende il task di Predictive Process Monitoring a classificatori black-box (Random Forest, XGBoost, LSTM) rendendo necessario lo sviluppo di una fase esplicativa.
 
 \subsection{Scelta del framework SHAP}
+\label{subsec:shap_framework}
 Come framework di spiegabilità è stato scelto SHAP (\textit{SHapley Additive exPlanations})~\cite{xai-shap-lundberg2017} per il suo forte fondamento teorico.
 In particolare la scelta metodologica è motivata dalla proprietà di additività locale:
 \begin{equation}
@@ -177,6 +183,7 @@ Poiché i valori $\phi_i$ sono espressi nella medesima unità di misura dell'out
 \end{enumerate*}.
 
 \subsection{Interpretabilità dei nomi delle features}
+\label{subsec:feature_naming}
 Il modulo innanzitutto implementa un mapping custom dal nome grezzo delle features a una denominazione intelligibile, permettendo un'analisi direttamente al livello con più bassa granularità.
 Per le features categoriche ricavate tramite \textit{one-hot encoding} viene interrogato l'encoder originale come fonte di verità, mentre per le metriche posturali viene applicato un mapping che traduce le sigle grezze in etichette indicanti l'articolazione, il livello di rischio e lo step temporale associato.
 
@@ -184,6 +191,7 @@ Per le features categoriche ricavate tramite \textit{one-hot encoding} viene int
 
 
 \subsection{Aggregazione delle features}
+\label{subsec:feature_aggregation}
 L'aggregazione delle features è prevista sia a livello di dominio che a livello temporale.
 \paragraph{Livello di dominio} Permette di comprendere l'importanza che ogni ambito assume nel processo di predizione.
 \begin{itemize}
@@ -210,6 +218,7 @@ L'aggregazione delle features è prevista sia a livello di dominio che a livello
 
 
 \subsection{Confronto tra approcci \textit{model-specific} e agnostici}
+\label{subsec:explainer_comparison}
 L'impiego di tecniche di spiegabilità \textit{model-specific} permette di abbattere la complessità computazionale del calcolo dei valori di \textit{Shapley} sfruttando la struttura interna del modello analizzato. Per validarne l'affidabilità la pipeline integra il confronto tra i risultati ottenuti tramite tecniche \textit{model-specific} e l'approccio agnostico.
 
 \paragraph{Approccio \textit{model-specific}}
@@ -231,6 +240,7 @@ Per rendere comparabili i valori di \textit{Shapley} calcolati dai diversi \text
 
 
 \subsection{Valutazione della generalizzabilità}
+\label{subsec:generalizability_evaluation}
 Per verificare la capacità di generalizzazione delle spiegazioni, la pipeline include il confronto tra i valori di \textit{Shapley} calcolati rispettivamente sul training set e sul testing set.
 
 \section{Stack tecnologico}
