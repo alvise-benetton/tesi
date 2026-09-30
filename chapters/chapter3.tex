@@ -15,8 +15,8 @@ Come illustrato nella Figura~\ref{fig:pipeline_architettura}, la pipeline si art
 \begin{enumerate}
     \item \textbf{Dataset}: caricamento dei log di assemblaggio ed estrazione delle feature nelle due configurazioni \texttt{no\_human} e \texttt{human}, con partizionamento in 10 fold stratificati per la Cross-Validation.
     \item \textbf{Bucketing ed encoding}: suddivisione e codifica delle tracce secondo tre diverse strategie di bucketing, con rappresentazione tabulare (2D) per i modelli classici e tensoriale (3D) per la rete neurale ricorrente (LSTM).
-\item \textbf{Addestramento e ottimizzazione}: addestramento dei quattro classificatori (Decision Tree, Random Forest, XGBoost e LSTM) mediante Stratified Nested Cross-Validation e ottimizzazione bayesiana degli iperparametri (Hyperopt TPE) orientata alla massimizzazione del coefficiente MCC sul validation set.
-    \item \textbf{Valutazione}: calcolo delle metriche di classificazione aggregate sui test set di tutti i 10 fold di Cross-Validation e identificazione del fold con MCC mediano come istanza rappresentativa. 
+    \item \textbf{Addestramento e ottimizzazione}: addestramento dei quattro classificatori (Decision Tree, Random Forest, XGBoost e LSTM) mediante Stratified Nested Cross-Validation e ottimizzazione bayesiana degli iperparametri (Hyperopt TPE) orientata alla massimizzazione del coefficiente MCC sul validation set.
+    \item \textbf{Valutazione}: calcolo delle metriche di classificazione aggregate sui test set di tutti i 10 fold di Cross-Validation e identificazione del fold con MCC mediano come istanza rappresentativa.
     \item \textbf{Spiegabilità}: attribuzione di feature importance tramite tecnica SHAP con confronto tra metodi di spiegabilità \textit{model-specific} (\texttt{TreeExplainer} per Decision Tree, Random Forest, XGBoost; \texttt{DeepExplainer} per LSTM) e agnostici (\texttt{KernelExplainer}).
 \end{enumerate}
 
@@ -188,19 +188,19 @@ L'aggregazione delle features è prevista sia a livello di dominio che a livello
 \paragraph{Livello di dominio} Permette di comprendere l'importanza che ogni ambito assume nel processo di predizione.
 \begin{itemize}
     \item Livello fine (\texttt{FINE}): raggruppa le features posturali nei 4 distretti anatomici
-    \begin{enumerate*}[label=(\roman*)]
-        \item RULA Wrist (polso)
-        \item RULA Upper Arm (braccio)
-        \item RULA Lower Arm (avambraccio)
-        \item RULA Neck (collo)
-    \end{enumerate*}. A queste affianca le altre dimensioni riguardanti l'operatore e la baseline di processo.
-    
+          \begin{enumerate*}[label=(\roman*)]
+              \item RULA Wrist (polso)
+              \item RULA Upper Arm (braccio)
+              \item RULA Lower Arm (avambraccio)
+              \item RULA Neck (collo)
+          \end{enumerate*}. A queste affianca le altre dimensioni riguardanti l'operatore e la baseline di processo.
+
     \item Livello semantico (\texttt{SEMANTIC}): raggruppa le features posturali in un unico gruppo RULA Ergonomics, mantenendo separate le altre dimensioni.
     \item Livello macro (\texttt{MACRO}): suddivisione binaria che divide tutte le features nei gruppi
-    \begin{enumerate*}[label=(\roman*)]
-        \item Human
-        \item Process Log
-    \end{enumerate*}.
+          \begin{enumerate*}[label=(\roman*)]
+              \item Human
+              \item Process Log
+          \end{enumerate*}.
 \end{itemize}
 
 \paragraph{Livello temporale} Permette di comprendere come ogni istante della traccia concentri l'attenzione.
@@ -210,7 +210,28 @@ L'aggregazione delle features è prevista sia a livello di dominio che a livello
 
 
 \subsection{Confronto tra approcci \textit{model-specific} e agnostici}
+L'impiego di tecniche di spiegabilità \textit{model-specific} permette di abbattere la complessità computazionale del calcolo dei valori di \textit{Shapley} sfruttando la struttura interna del modello analizzato. Per validarne l'affidabilità la pipeline integra il confronto tra i risultati ottenuti tramite tecniche \textit{model-specific} e l'approccio agnostico.
+
+\paragraph{Approccio \textit{model-specific}}
+Poiché l'architettura prevede l'impiego di modelli ad albero (Decision Tree, Random Forest, XGBoost) e reti neurali (LSTM), sono stati impiegati
+\begin{enumerate*}[label=(\roman*)]
+    \item \texttt{TreeExplainer} per l'interpretazione dei modelli ad albero
+    \item \texttt{DeepExplainer} per l'interpretazione delle reti neurali
+\end{enumerate*}.
+
+\paragraph{Approccio agnostico}
+Come tecnica di confronto è stato scelto \texttt{KernelExplainer}, l'algoritmo originale proposto da SHAP~\cite{xai-shap-lundberg2017}, che stima i valori di \textit{Shapley} formulando una regressione lineare locale.
+
+\medskip
+Per rendere comparabili i valori di \textit{Shapley} calcolati dai diversi \textit{explainer}, le attribuzioni sono
+\begin{enumerate*}[label=(\roman*)]
+    \item normalizzate in quote d'impatto percentuali per eliminare differenze di scala
+    \item aggregate per cluster semantici per compensare il rumore locale
+\end{enumerate*}.
+
+
 \subsection{Valutazione della generalizzabilità}
+Per verificare la capacità di generalizzazione delle spiegazioni, la pipeline include il confronto tra i valori di \textit{Shapley} calcolati rispettivamente sul training set e sul testing set.
 
 \section{Stack tecnologico}
 \label{sec:stack}
