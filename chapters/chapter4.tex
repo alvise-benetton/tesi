@@ -1,49 +1,65 @@
 \chapter{Risultati}
 \label{cha:results}
 
-\section{Valutazione dell'Impatto dei Dati Human e dei Modelli ad Albero (RQ1)}
+In questo capitolo sono presentati e discussi i risultati sperimentali emersi dall'esecuzione della pipeline descritta nel Capitolo~\ref{cha:methodology}. In particolare vengono indagate le \textit{research questions}:
+\begin{enumerate}[label=\textbf{RQ\arabic*}]
+    \item La codifica di features umane influenza la qualità della predizione sul risultato di montaggio?
+    \item L'uso di una rete neurale ricorrente supera le performance dei modelli ad albero?
+    \item Quali features motivano le predizioni e come varia la loro importanza durante l'esecuzione del processo?
+    \item Le tecniche di spiegabilità \textit{model-specific} sono sufficientemente fedeli a quelle agnostiche?
+\end{enumerate}
+
+\section{RQ1:}
 \label{sec:rq1_tree_models}
+Lo scopo della prima domanda di ricerca è determinare se l'arricchimento dei process log tradizionali con informazioni ergonomiche e posturali riguardanti l'operatore produce un aumento della capacità predittiva dei modelli tradizionalmente utilizzati per l'analisi di dati tabulari.
 
-\subsection{Baseline Decision Tree vs Ensemble (Random Forest e XGBoost)}
+\subsection{Confronto della \textit{baseline} con metodi \textit{ensemble}}
 \label{subsec:rq1_baseline_vs_ensemble}
+Come descritto nel Capitolo~\ref{cha:methodology}, l'indagine sperimentale replica il lavoro di riferimento svolto da Vian~\cite{ppm-human-centered-vian2024}, in cui viene addestrato un singolo \textit{decision tree}.
 
-\subsection{Confronto configurazioni no\_human vs human}
+Per superarne le limitazioni descritte nel Capitolo~\ref{cha:state_of_art} sono stati impiegati i modelli \textit{ensemble}
+\begin{enumerate*}[label=(\roman*)]
+    \item Random Forest (che applica la tecnica del \textit{bagging}) e
+    \item XGBoost (che applica la tecnica del \textit{boosting})
+\end{enumerate*}, mantenendo il Decision Tree come riferimento per l'analisi statistica.
+
+
+\subsection{Confronto configurazioni \texttt{no\_human} vs \texttt{human}}
 \label{subsec:rq1_human_vs_nohuman}
 
-\subsection{Analisi comparativa delle tre strategie di encoding}
-\label{subsec:rq1_encoding_strategies}
-
-\subsection{Identificazione del Top Classifier ad albero e Top Encoding (Random Forest)}
+\subsection{Miglior classificatore ad albero}
 \label{subsec:rq1_top_classifier}
 
+\subsection{Migliore strategia di \textit{encoding}}
+\label{subsec:rq1_top_classifier}
 
-\section{Confronto tra Top Classifier ad Albero e Rete Neurale LSTM (RQ2)}
+\section{RQ2:}
 \label{sec:rq2_rf_vs_lstm}
 
-\subsection{Valutazione comparativa Random Forest vs LSTM su tutte le strategie di encoding}
+\subsection{Valutazione comparativa Random Forest vs LSTM}
 \label{subsec:rq2_rf_vs_lstm_encoding}
 
-\subsection{Analisi dei trade-off tra complessità architetturale e guadagno di performance}
+\subsection{Trade-off tra complessità architetturale e performance}
 \label{subsec:rq2_tradeoffs}
 
 
-\section{Analisi di Spiegabilità SHAP in Scenario Industriale (RQ3)}
+\section{RQ3:}
 \label{sec:rq3_shap_explainability}
 
-\subsection{Importanza a livello di Base Feature (BASE\_FEATURE)}
+\subsection{Quota d'importanza delle feature di base}
 \label{subsec:rq3_base_feature}
 
-\subsection{Dinamica temporale dell'attenzione predittiva (Livello STEP)}
+\subsection{Quota d'importanza temporale}
 \label{subsec:rq3_step_dynamics}
 
-\subsection{Approfondimento sul Distretto RULA del Polso (RULA Wrist)}
+\subsection{Importanza del distretto di feature RULA}
 \label{subsec:rq3_rula_wrist}
 
-\section[Confronto Metodologico: Tecniche Model-Specific vs Model-Agnostic (RQ4)]{Confronto Metodologico: Tecniche Model-Specific\\ vs Model-Agnostic (RQ4)}
+\section{R4:}
 \label{sec:rq4_methodological_comparison}
 
-\subsection{Fedeltà e convergenza delle spiegazioni (Tree/DeepExplainer vs KernelExplainer)}
+\subsection{Fedeltà delle spiegazioni}
 \label{subsec:rq4_fidelity_convergence}
 
-\subsection{Trade-off di efficienza computazionale e applicabilità industriale in tempo reale}
+\subsection{Trade-off di efficienza computazionale}
 \label{subsec:rq4_computational_efficiency}
