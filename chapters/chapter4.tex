@@ -1,11 +1,49 @@
 \chapter{Risultati}
 \label{cha:results}
 
-\section{Risposta alla domanda di ricerca RQ1}
-\label{sec:rq1_answer}
+\section{Valutazione dell'Impatto dei Dati Human e dei Modelli ad Albero (RQ1)}
+\label{sec:rq1_tree_models}
 
-\section{Risposta alla domanda di ricerca RQ2}
-\label{sec:rq2_answer}
+\subsection{Baseline Decision Tree vs Ensemble (Random Forest e XGBoost)}
+\label{subsec:rq1_baseline_vs_ensemble}
 
-\section{Risposta alla domanda di ricerca RQ3}
-\label{sec:rq3_answer}
+\subsection{Confronto configurazioni no\_human vs human}
+\label{subsec:rq1_human_vs_nohuman}
+
+\subsection{Analisi comparativa delle tre strategie di encoding}
+\label{subsec:rq1_encoding_strategies}
+
+\subsection{Identificazione del Top Classifier ad albero e Top Encoding (Random Forest)}
+\label{subsec:rq1_top_classifier}
+
+
+\section{Confronto tra Top Classifier ad Albero e Rete Neurale LSTM (RQ2)}
+\label{sec:rq2_rf_vs_lstm}
+
+\subsection{Valutazione comparativa Random Forest vs LSTM su tutte le strategie di encoding}
+\label{subsec:rq2_rf_vs_lstm_encoding}
+
+\subsection{Analisi dei trade-off tra complessità architetturale e guadagno di performance}
+\label{subsec:rq2_tradeoffs}
+
+
+\section{Analisi di Spiegabilità SHAP in Scenario Industriale (RQ3)}
+\label{sec:rq3_shap_explainability}
+
+\subsection{Importanza a livello di Base Feature (BASE\_FEATURE)}
+\label{subsec:rq3_base_feature}
+
+\subsection{Dinamica temporale dell'attenzione predittiva (Livello STEP)}
+\label{subsec:rq3_step_dynamics}
+
+\subsection{Approfondimento sul Distretto RULA del Polso (RULA Wrist)}
+\label{subsec:rq3_rula_wrist}
+
+\section[Confronto Metodologico: Tecniche Model-Specific vs Model-Agnostic (RQ4)]{Confronto Metodologico: Tecniche Model-Specific\\ vs Model-Agnostic (RQ4)}
+\label{sec:rq4_methodological_comparison}
+
+\subsection{Fedeltà e convergenza delle spiegazioni (Tree/DeepExplainer vs KernelExplainer)}
+\label{subsec:rq4_fidelity_convergence}
+
+\subsection{Trade-off di efficienza computazionale e applicabilità industriale in tempo reale}
+\label{subsec:rq4_computational_efficiency}

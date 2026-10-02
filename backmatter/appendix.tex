@@ -1,22 +1,183 @@
-\chapter{Titolo primo allegato}
+\chapter{Spiegabilit\`a dei modelli}
+\label{app:xai_complete_review}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sed nunc orci. Aliquam nec nisl vitae sapien pulvinar dictum quis non urna. Suspendisse at dui a erat aliquam vestibulum. Quisque ultrices pellentesque pellentesque. Pellentesque egestas quam sed blandit tempus. Sed congue nec risus posuere euismod. Maecenas ut lacus id mauris sagittis egestas a eu dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque at ultrices tellus. Ut eu purus eget sem iaculis ultricies sed non lorem. Curabitur gravida dui eget ex vestibulum venenatis. Phasellus gravida tellus velit, non eleifend justo lobortis eget. 
+In questa appendice sono riportati i risultati completi dell'analisi di spiegabilit\`a condotta tramite SHAP sui dati di test della configurazione arricchita (\texttt{human}).
 
-\section{Titolo}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sed nunc orci. Aliquam nec nisl vitae sapien pulvinar dictum quis non urna. Suspendisse at dui a erat aliquam vestibulum. Quisque ultrices pellentesque pellentesque. Pellentesque egestas quam sed blandit tempus. Sed congue nec risus posuere euismod. Maecenas ut lacus id mauris sagittis egestas a eu dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque at ultrices tellus. Ut eu purus eget sem iaculis ultricies sed non lorem. Curabitur gravida dui eget ex vestibulum venenatis. Phasellus gravida tellus velit, non eleifend justo lobortis eget. 
+Per ciascuna strategia di bucketing (\texttt{Prefix Length}, \texttt{Component} e \texttt{Component Time Warped}) e per ciascuno dei quattro classificatori, i risultati sono articolati su tre pagine:
+\begin{itemize}
+    \item la prima pagina illustra l'attribuzione di importanza nel corso dell'esecuzione a livello Macro, Semantico e Base Feature, affiancata dalla matrice di attenzione temporale complessiva;
+    \item la seconda pagina presenta il confronto di fedelt\`a tra il metodo di spiegazione \textit{model-specific} e il benchmark agnostico (\texttt{KernelExplainer});
+    \item la terza pagina riporta l'impatto SHAP netto nel corso del tempo sui singoli punteggi delle feature ergonomiche RULA (\texttt{RULA Wrist}, \texttt{RULA Upper Arm}, \texttt{RULA Lower Arm}, \texttt{RULA Neck}).
+\end{itemize}
+Tutti i grafici sono disposti a tutta larghezza su linea singola per garantire la massima leggibilit\`a e risoluzione lungo l'intera dinamica temporale.
 
-\subsection{Sottotitolo}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sed nunc orci. Aliquam nec nisl vitae sapien pulvinar dictum quis non urna. Suspendisse at dui a erat aliquam vestibulum. Quisque ultrices pellentesque pellentesque. Pellentesque egestas quam sed blandit tempus. Sed congue nec risus posuere euismod. Maecenas ut lacus id mauris sagittis egestas a eu dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque at ultrices tellus. Ut eu purus eget sem iaculis ultricies sed non lorem. Curabitur gravida dui eget ex vestibulum venenatis. Phasellus gravida tellus velit, non eleifend justo lobortis eget. 
+\clearpage
 
+\foreach \strat/\stratTitle/\sShort/\sKey in {
+        PREFIX_LENGTH/{Strategia \texttt{Prefix Length}}/{Prefix Length}/pl,
+        COMPONENT/{Strategia \texttt{Component}}/{Component}/comp,
+        COMPONENT_TIME_WARPED/{Strategia \texttt{Component Time Warped}}/{Time Warped}/ctw
+    } {
+        \section{\stratTitle}
+        \label{sec:app_\sKey}
 
-\chapter{Titolo secondo allegato}
+        \foreach \clf/\clfName in {
+                rf/{Random Forest},
+                xgb/{XGBoost},
+                dt/{Decision Tree},
+                lstm/{LSTM}
+            } {
+                \subsection{Classificatore: \clfName}
+                \label{subsec:app_\sKey_\clf}
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sed nunc orci. Aliquam nec nisl vitae sapien pulvinar dictum quis non urna. Suspendisse at dui a erat aliquam vestibulum. Quisque ultrices pellentesque pellentesque. Pellentesque egestas quam sed blandit tempus. Sed congue nec risus posuere euismod. Maecenas ut lacus id mauris sagittis egestas a eu dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque at ultrices tellus. Ut eu purus eget sem iaculis ultricies sed non lorem. Curabitur gravida dui eget ex vestibulum venenatis. Phasellus gravida tellus velit, non eleifend justo lobortis eget. 
+                % ======================================================================
+                % Pagina 1: Dinamica Longitudinale e Attenzione Temporale (4 grafici)
+                % ======================================================================
+                \begin{figure}[H]
+                    \centering
+                    % Riga 1: Macro
+                    \begin{subfigure}[c]{\textwidth}
+                        \centering
+                        \includegraphics[width=\textwidth]{images/plots/\strat_\clf_longitudinal_macro.pdf}
+                        \vspace{-0.4em}
+                        \caption{Distribuzione Macro-Cluster}
+                        \label{fig:\sKey_\clf_macro}
+                    \end{subfigure}
 
-\section{Titolo}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sed nunc orci. Aliquam nec nisl vitae sapien pulvinar dictum quis non urna. Suspendisse at dui a erat aliquam vestibulum. Quisque ultrices pellentesque pellentesque. Pellentesque egestas quam sed blandit tempus. Sed congue nec risus posuere euismod. Maecenas ut lacus id mauris sagittis egestas a eu dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque at ultrices tellus. Ut eu purus eget sem iaculis ultricies sed non lorem. Curabitur gravida dui eget ex vestibulum venenatis. Phasellus gravida tellus velit, non eleifend justo lobortis eget. 
+                    \vspace{0.7em}
 
-\subsection{Sottotitolo}
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec sed nunc orci. Aliquam nec nisl vitae sapien pulvinar dictum quis non urna. Suspendisse at dui a erat aliquam vestibulum. Quisque ultrices pellentesque pellentesque. Pellentesque egestas quam sed blandit tempus. Sed congue nec risus posuere euismod. Maecenas ut lacus id mauris sagittis egestas a eu dui. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Pellentesque at ultrices tellus. Ut eu purus eget sem iaculis ultricies sed non lorem. Curabitur gravida dui eget ex vestibulum venenatis. Phasellus gravida tellus velit, non eleifend justo lobortis eget. 
+                    % Riga 2: Semantico
+                    \begin{subfigure}[c]{\textwidth}
+                        \centering
+                        \includegraphics[width=\textwidth]{images/plots/\strat_\clf_longitudinal_semantic.pdf}
+                        \vspace{-0.4em}
+                        \caption{Distribuzione Cluster Semantici}
+                        \label{fig:\sKey_\clf_sem}
+                    \end{subfigure}
 
+                    \vspace{0.7em}
 
+                    % Riga 3: Base Feature
+                    \begin{subfigure}[c]{\textwidth}
+                        \centering
+                        \includegraphics[width=\textwidth]{images/plots/\strat_\clf_longitudinal_base_feature.pdf}
+                        \vspace{-0.4em}
+                        \caption{Attribuzione Base Feature}
+                        \label{fig:\sKey_\clf_base}
+                    \end{subfigure}
+
+                    \vspace{0.7em}
+
+                    % Riga 4: Attenzione Temporale
+                    \begin{subfigure}[c]{\textwidth}
+                        \centering
+                        \includegraphics[width=\textwidth]{images/plots/\strat_\clf_temporal_attention.pdf}
+                        \vspace{-0.4em}
+                        \caption{Matrice Attenzione Temporale ($0\text{--}100\%$)}
+                        \label{fig:\sKey_\clf_att}
+                    \end{subfigure}
+                \end{figure}
+
+                \clearpage
+
+                % ======================================================================
+                % Pagina 2: Fedeltà Explainer Model-Specific vs. Model-Agnostic (4 grafici)
+                % ======================================================================
+                \begin{figure}[H]
+                    \centering
+                    % Riga 1: Fedeltà Macro
+                    \begin{subfigure}[c]{\textwidth}
+                        \centering
+                        \includegraphics[width=\textwidth]{images/plots/\strat_\clf_top_features_macro.pdf}
+                        \vspace{-0.4em}
+                        \caption{Fedeltà Macro-Cluster ($100\%$)}
+                        \label{fig:\sKey_\clf_fid_macro}
+                    \end{subfigure}
+
+                    \vspace{0.4em}
+
+                    % Riga 2: Fedeltà Semantico
+                    \begin{subfigure}[c]{\textwidth}
+                        \centering
+                        \includegraphics[width=\textwidth]{images/plots/\strat_\clf_top_features_semantic.pdf}
+                        \vspace{-0.4em}
+                        \caption{Fedeltà Cluster Semantici ($100\%$)}
+                        \label{fig:\sKey_\clf_fid_sem}
+                    \end{subfigure}
+
+                    \vspace{0.4em}
+
+                    % Riga 3: Fedeltà Base Feature
+                    \begin{subfigure}[c]{\textwidth}
+                        \centering
+                        \includegraphics[width=\textwidth]{images/plots/\strat_\clf_top_features_base_feature.pdf}
+                        \vspace{-0.4em}
+                        \caption{Fedeltà Base Feature ($100\%$)}
+                        \label{fig:\sKey_\clf_fid_base}
+                    \end{subfigure}
+
+                    \vspace{0.4em}
+
+                    % Riga 4: Fedeltà Atomiche
+                    \begin{subfigure}[c]{\textwidth}
+                        \centering
+                        \includegraphics[width=\textwidth]{images/plots/\strat_\clf_top_features_none.pdf}
+                        \vspace{-0.4em}
+                        \caption{Fedeltà Feature Atomiche (Top-8)}
+                        \label{fig:\sKey_\clf_fid_none}
+                    \end{subfigure}
+                \end{figure}
+
+                \clearpage
+
+                % ======================================================================
+                % Pagina 3: Dinamica Temporale dei Punteggi Ergonomici RULA (4 grafici)
+                % ======================================================================
+                \begin{figure}[H]
+                    \centering
+                    % Riga 1: Wrist
+                    \begin{subfigure}[c]{\textwidth}
+                        \centering
+                        \includegraphics[width=\textwidth]{images/plots/\strat_\clf_rula_wrist_heatmap.pdf}
+                        \vspace{-0.4em}
+                        \caption{Impatto SHAP netto \texttt{RULA Wrist}}
+                        \label{fig:\sKey_\clf_rula_wrist}
+                    \end{subfigure}
+
+                    \vspace{0.7em}
+
+                    % Riga 2: Upper Arm
+                    \begin{subfigure}[c]{\textwidth}
+                        \centering
+                        \includegraphics[width=\textwidth]{images/plots/\strat_\clf_rula_upper_heatmap.pdf}
+                        \vspace{-0.4em}
+                        \caption{Impatto SHAP netto \texttt{RULA Upper Arm}}
+                        \label{fig:\sKey_\clf_rula_upper}
+                    \end{subfigure}
+
+                    \vspace{0.7em}
+
+                    % Riga 3: Lower Arm
+                    \begin{subfigure}[c]{\textwidth}
+                        \centering
+                        \includegraphics[width=\textwidth]{images/plots/\strat_\clf_rula_lower_heatmap.pdf}
+                        \vspace{-0.4em}
+                        \caption{Impatto SHAP netto \texttt{RULA Lower Arm}}
+                        \label{fig:\sKey_\clf_rula_lower}
+                    \end{subfigure}
+
+                    \vspace{0.7em}
+
+                    % Riga 4: Neck
+                    \begin{subfigure}[c]{\textwidth}
+                        \centering
+                        \includegraphics[width=\textwidth]{images/plots/\strat_\clf_rula_neck_heatmap.pdf}
+                        \vspace{-0.4em}
+                        \caption{Impatto SHAP netto \texttt{RULA Neck}}
+                        \label{fig:\sKey_\clf_rula_neck}
+                    \end{subfigure}
+                \end{figure}
+
+                \clearpage
+            }
+    }
